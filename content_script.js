@@ -15,9 +15,9 @@ const otherSiteTabCount = Object.keys(otherSiteTab).length;
 
 function diffDays(dt1, dt2) {
 
-    let diff =(dt2 - dt1) / 1000;
-    diff /= 3600*24;
-    if(diff<0)diff=9999;
+    let diff = (dt2 - dt1) / 1000;
+    diff /= 3600 * 24;
+    if (diff < 0) diff = 9999;
     return (diff);
 
 }
@@ -30,7 +30,8 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
         // default Tab
         if (lectureIDList[i].type === 'default') {
             for (let j = 2; j < defaultTabCount; j++) {
-                let lectureID = defaultTab[j].getElementsByTagName('a')[0].getAttribute('href').slice(-17);
+                // let lectureID = defaultTab[j].getElementsByTagName('a')[0].getAttribute('href').slice(-17);
+                let lectureID = defaultTab[j].getElementsByTagName('span')[1].getAttribute('data');
                 const q = upToDateKadaiList.findIndex((kadai) => {
                     return (kadai.lectureID === lectureID);
                 });
@@ -38,13 +39,12 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
                     if (upToDateKadaiList[q].isUpdate === 1) {
                         defaultTab[j].classList.add('badge');
                     }
-                    let daysUntilDue=diffDays(new Date().getTime(),upToDateKadaiList[q].closestTime);
-                    console.log('daysuntil',daysUntilDue, lectureID)
+                    let daysUntilDue = diffDays(new Date().getTime(), upToDateKadaiList[q].closestTime);
                     if (daysUntilDue <= 1) {
                         defaultTab[j].classList.add('nav-danger');
-                    }else if (daysUntilDue <= 5) {
+                    } else if (daysUntilDue <= 5) {
                         defaultTab[j].classList.add('nav-warning');
-                    }else if (daysUntilDue <= 14) {
+                    } else if (daysUntilDue <= 14) {
                         defaultTab[j].classList.add('nav-safe');
                     }
                 }
@@ -61,12 +61,12 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
                     if (upToDateKadaiList[q].isUpdate === 1) {
                         otherSiteTab[j].classList.add('badge');
                     }
-                    let daysUntilDue=diffDays(new Date().getTime(),upToDateKadaiList[q].closestTime);
+                    let daysUntilDue = diffDays(new Date().getTime(), upToDateKadaiList[q].closestTime);
                     if (daysUntilDue <= 1) {
                         otherSiteTab[j].classList.add('nav-danger');
-                    }else if (daysUntilDue <= 5) {
+                    } else if (daysUntilDue <= 5) {
                         otherSiteTab[j].classList.add('nav-warning');
-                    }else if (daysUntilDue <= 14) {
+                    } else if (daysUntilDue <= 14) {
                         otherSiteTab[j].classList.add('nav-safe');
                     }
                 }
@@ -150,9 +150,10 @@ function parseKadai(data) {
 }
 
 function getKadaiFromPandA() {
+    // console.log('panda');
     return $.ajax({
-        url: "https://das82.com/my.json",
-        // url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
+        // url: "https://das82.com/my.json",
+        url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
         dataType: "json",
         type: "get",
         cache: false,
@@ -168,6 +169,23 @@ function getKadaiFromStorage(key) {
     });
 }
 
+function updateVisited(lectureID) {
+    getKadaiFromStorage('hasNewItem').then(function (hasNewItem) {
+        // console.log('fetch hasNewitem', hasNewItem);
+        const q = hasNewItem.findIndex((kadai) => {
+            return (kadai.lectureID === lectureID);
+        });
+        // console.log('q',q);
+        if (q !== -1) {
+
+            hasNewItem[q].isUpdate = 0;
+            // console.log('updateVisit',hasNewItem);
+            saveHasNew(hasNewItem);
+        }
+
+    });
+}
+
 function saveKadai(parsedKadai) {
     var date = new Date();
     let entity = {};
@@ -175,7 +193,7 @@ function saveKadai(parsedKadai) {
     entity.kadai = parsedKadai;
     entity.lastModified = date.getTime();
     chrome.storage.local.set(entity, function () {
-        console.log('stored kadai');
+        // console.log('stored kadai');
     });
 }
 
@@ -186,53 +204,53 @@ function saveHasNew(noticationList) {
     entity.hasNewItem = noticationList;
     entity.lastModified = date.getTime();
     chrome.storage.local.set(entity, function () {
-        console.log('stored hasNew');
+        // console.log('stored hasNew');
     });
 }
 
 function createNotificationList(upToDateKadaiList, hasNewItem) {
-    let notificationList=[];
+    let notificationList = [];
 
-    for (let i=0;i<upToDateKadaiList.length;i++){
-        let tmp=upToDateKadaiList[i];
-        let lectureID=upToDateKadaiList[i].lectureID;
-        if(typeof hasNewItem !== 'undefined'){
+    for (let i = 0; i < upToDateKadaiList.length; i++) {
+        let tmp = upToDateKadaiList[i];
+        let lectureID = upToDateKadaiList[i].lectureID;
+        if (typeof hasNewItem !== 'undefined') {
 
             const q = hasNewItem.findIndex((item) => {
                 return (item.lectureID === lectureID);
             });
 
-            if(q===-1){
+            if (q === -1) {
                 // 差分あり
-                if (upToDateKadaiList[i].isUpdate===1){
-                    tmp.isUpdate=1;
+                if (upToDateKadaiList[i].isUpdate === 1) {
+                    tmp.isUpdate = 1;
                 }
                 // 差分なし
-                else{
-                    tmp.isUpdate=0;
+                else {
+                    tmp.isUpdate = 0;
                 }
-            }else{
-                let hasNew=hasNewItem[q].isUpdate;
+            } else {
+                let hasNew = hasNewItem[q].isUpdate;
                 // 差分あり
-                if (upToDateKadaiList[i].isUpdate===1){
-                    tmp.isUpdate=1;
+                if (upToDateKadaiList[i].isUpdate === 1) {
+                    tmp.isUpdate = 1;
                 }
                 // 差分なし
-                else{
+                else {
                     //もし過去にupdateを確認してなかったら（hasNew=1だったら）引き続き1が入る。
                     //TODO: farthestTime が nowTimeより古ければisUpdate=0
-                    tmp.isUpdate=hasNew;
+                    tmp.isUpdate = hasNew;
                 }
 
             }
-        }else{
+        } else {
             // 差分あり
-            if (upToDateKadaiList[i].isUpdate===1){
-                tmp.isUpdate=1;
+            if (upToDateKadaiList[i].isUpdate === 1) {
+                tmp.isUpdate = 1;
             }
             // 差分なし
-            else{
-                tmp.isUpdate=0;
+            else {
+                tmp.isUpdate = 0;
             }
         }
         notificationList.push(tmp);
@@ -289,14 +307,12 @@ function main() {
         // 2. Get old kadai from storage
         getKadaiFromStorage('kadai').then(function (storedKadai) {
             // 3. If there is no kadai in storege -> initialize
-            console.log('fetch stored kadai', storedKadai);
             if (typeof storedKadai === 'undefined') {
                 saveKadai(parsedKadai);
             } else {
                 // 3. else compare latest and saved kadai list ->make uptodate list
                 let upToDateKadaiList;
                 upToDateKadaiList = compare(parsedKadai, storedKadai);
-                console.log('uptodate', upToDateKadaiList);
 
                 // 4. Get visited history
                 getKadaiFromStorage('hasNewItem').then(function (hasNewItem) {
@@ -307,6 +323,7 @@ function main() {
                     console.log('notificationList', notificationList);
 
                     saveHasNew(notificationList);
+                    saveKadai(parsedKadai);
 
                     addNotificationBadge(getTabList(), notificationList);
 
@@ -317,5 +334,23 @@ function main() {
 
 }
 
+function getSiteID() {
+    var url = location.href;
+    let lectureID = '';
+    var reg = new RegExp("https://panda.ecs.kyoto-u.ac.jp/portal.*?/(.*?)(?=/)");
+    if (url.match(reg) && url.match(reg)[1] === 'site') {
+        lectureID = url.slice(44, 61);
+    }
+    return lectureID;
+}
+
+function test() {
+    if (getSiteID() && getSiteID().length === 17) {
+        console.log('visited',getSiteID());
+        updateVisited(getSiteID());
+    }
+}
+
 insertCSS();
 main();
+test();
