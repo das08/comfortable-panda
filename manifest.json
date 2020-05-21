@@ -1,0 +1,39 @@
+{
+  "name": "Comfortable PandA",
+  "description": "Make our PandA life more comfortable!",
+  "version": "0.9.0",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "hello_extensions.png"
+  },
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "jquery.min.js",
+        "content_script.js"
+      ],
+      "css": [
+        "custom-panda.css"
+      ],
+      "matches": [
+        "https://das82.com/*",
+        "https://panda.ecs.kyoto-u.ac.jp/*"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    "custom-panda.css"
+  ]
+}
