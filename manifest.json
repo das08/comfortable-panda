@@ -1,31 +1,30 @@
 {
   "name": "Comfortable PandA",
-  "description": "Make our PandA life more comfortable!",
-  "version": "0.9.0",
+  "description": "Makes our PandA life more comfortable!",
+  "version": "1.0.0",
   "manifest_version": 2,
-  "browser_action": {
-    "default_popup": "popup.html",
-    "default_icon": "hello_extensions.png"
+  "icons": {
+    "16": "img/icon16.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
   },
-  "permissions": [
-    "activeTab",
-    "declarativeContent",
-    "storage"
-  ],
-  "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
+  "browser_action": {
+    "default_icon": {
+      "16": "img/icon16.png",
+      "24": "img/icon24.png",
+      "32": "img/icon32.png"
+    },
+    "default_title": "Comfortable PandA",
+    "default_popup": "popup.html"
   },
   "content_scripts": [
     {
       "js": [
-        "jquery.min.js",
+        "js/jquery.min.js",
         "content_script.js"
       ],
       "css": [
-        "custom-panda.css"
+        "css/custom-panda.css"
       ],
       "matches": [
         "https://das82.com/*",
@@ -33,7 +32,18 @@
       ]
     }
   ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage"
+  ],
   "web_accessible_resources": [
-    "custom-panda.css"
+    "css/custom-panda.css"
   ]
 }

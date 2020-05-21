@@ -4,7 +4,7 @@ chrome.runtime.onMessage.addListener(function (msg) {
 
 function insertCSS() {
     let css = document.createElement('link');
-    css.href = chrome.extension.getURL('custom-panda.css');
+    css.href = chrome.extension.getURL('css/custom-panda.css');
     document.body.appendChild(css);
 }
 
@@ -21,6 +21,7 @@ function diffDays(dt1, dt2) {
     return (diff);
 
 }
+
 
 function addNotificationBadge(lectureIDList, upToDateKadaiList) {
     const lectureIDCount = lectureIDList.length;
@@ -107,7 +108,6 @@ function getTabList() {
 }
 
 function parseKadai(data) {
-    //TODO: exclude submitted kadai
     let parsedKadai = []
     let item = data.assignment_collection;
     for (let i = 0; i < item.length; i++) {
@@ -161,7 +161,7 @@ function getKadaiFromPandA() {
 }
 
 
-function getKadaiFromStorage(key) {
+function getFromStorage(key) {
     return new Promise(function (resolve, reject) {
         chrome.storage.local.get(key, function (items) {
             resolve(items[key]);
@@ -170,7 +170,7 @@ function getKadaiFromStorage(key) {
 }
 
 function updateVisited(lectureID) {
-    getKadaiFromStorage('hasNewItem').then(function (hasNewItem) {
+    getFromStorage('hasNewItem').then(function (hasNewItem) {
         // console.log('fetch hasNewitem', hasNewItem);
         const q = hasNewItem.findIndex((kadai) => {
             return (kadai.lectureID === lectureID);
@@ -300,12 +300,42 @@ function compare(parsedKadai, storedKadai) {
     return upToDateKadaiList;
 }
 
-function main() {
+function isPandAOK() {
+    //TODO: 動かす　今は全部true
+    let pandaStatus = true;
+    getFromStorage('lastModified').then(function (lastModified) {
+
+        if (typeof lastModified !== 'undefined' && (new Date().getTime() - lastModified)/1000 <= 30) {
+            pandaStatus = false;
+        }
+        console.log('last',lastModified,(new Date().getTime() - lastModified)/1000,pandaStatus);
+    });
+    return pandaStatus;
+}
+
+function getSiteID() {
+    var url = location.href;
+    let lectureID = '';
+    var reg = new RegExp("https://panda.ecs.kyoto-u.ac.jp/portal.*?/(.*?)(?=/)");
+    if (url.match(reg) && url.match(reg)[1] === 'site') {
+        lectureID = url.slice(44, 61);
+    }
+    return lectureID;
+}
+
+function update() {
+    if (getSiteID() && getSiteID().length === 17) {
+        console.log('visited', getSiteID());
+        updateVisited(getSiteID());
+    }
+}
+
+function display() {
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
         // 2. Get old kadai from storage
-        getKadaiFromStorage('kadai').then(function (storedKadai) {
+        getFromStorage('kadai').then(function (storedKadai) {
             // 3. If there is no kadai in storege -> initialize
             if (typeof storedKadai === 'undefined') {
                 saveKadai(parsedKadai);
@@ -315,7 +345,7 @@ function main() {
                 upToDateKadaiList = compare(parsedKadai, storedKadai);
 
                 // 4. Get visited history
-                getKadaiFromStorage('hasNewItem').then(function (hasNewItem) {
+                getFromStorage('hasNewItem').then(function (hasNewItem) {
                     //
                     console.log('fetch stored hasNewItem', hasNewItem);
 
@@ -331,26 +361,23 @@ function main() {
             }
         });
     });
-
 }
 
-function getSiteID() {
-    var url = location.href;
-    let lectureID = '';
-    var reg = new RegExp("https://panda.ecs.kyoto-u.ac.jp/portal.*?/(.*?)(?=/)");
-    if (url.match(reg) && url.match(reg)[1] === 'site') {
-        lectureID = url.slice(44, 61);
+function main() {
+    if (isPandAOK()){
+        console.log("you can hurry panda!");
+        display();
     }
-    return lectureID;
+    else{
+        console.log("dont hurry panda!");
+        getFromStorage('hasNewItem').then(function (hasNewItem) {
+            addNotificationBadge(getTabList(), hasNewItem);
+        });
+    }
+    update();
 }
 
-function test() {
-    if (getSiteID() && getSiteID().length === 17) {
-        console.log('visited',getSiteID());
-        updateVisited(getSiteID());
-    }
-}
 
 insertCSS();
 main();
-test();
+

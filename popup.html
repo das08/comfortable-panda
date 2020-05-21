@@ -1,18 +1,36 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="jquery.min.js"></script>
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <title>comfortable-PandA</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom-panda.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <style>
-      button {
-        height: 30px;
-        width: 30px;
-        outline: none;
-      }
+        body {
+            max-width: 415px;
+            min-width: 380px;
+        }
     </style>
-  </head>
-  <body>
-    <button id="changeColor"></button>
-    <button id="red">背景を赤にする!</button>
-    <script src="popup.js"></script>
-  </body>
+</head>
+
+<body>
+
+<div class="card bg-light mb-3">
+    <div class="card-header">機能説明</div>
+    <div class="card-body">
+        <h5 class="card-title">タブの色</h5>
+        <p class="card-text">提出期限までの日数に応じてタブに表示される色が変化します。<b>（提出済みでも変化します。）</b></p>
+        <p class="card-text"><span><img src="https://via.placeholder.com/15/e85555/000000?text=+"></span>・・・提出期限1日以内 </p>
+        <p class="card-text"><span><img src="https://via.placeholder.com/15/d7aa57/000000?text=+"></span>・・・提出期限5日以内 </p>
+        <p class="card-text"><span><img src="https://via.placeholder.com/15/62b665/000000?text=+"></span>・・・提出期限14日以内 </p>
+        <h5 class="card-title">通知バッジ</h5>
+        <p class="card-text">新たに課題が追加された場合、タブの左上に表示されます。</p>
+        <p class="card-text">タブをクリックするとバッジは消えます。</p>
+    </div>
+</div>
+<!--<script src="popup.js"></script>-->
+</body>
 </html>
