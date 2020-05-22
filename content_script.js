@@ -1,7 +1,3 @@
-chrome.runtime.onMessage.addListener(function (msg) {
-    $("body").css("background-color", msg.color);
-});
-
 function insertCSS() {
     let css = document.createElement('link');
     css.href = chrome.extension.getURL('css/custom-panda.css');
@@ -31,7 +27,6 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
         // default Tab
         if (lectureIDList[i].type === 'default') {
             for (let j = 2; j < defaultTabCount; j++) {
-                // let lectureID = defaultTab[j].getElementsByTagName('a')[0].getAttribute('href').slice(-17);
                 let lectureID = defaultTab[j].getElementsByTagName('span')[1].getAttribute('data');
                 const q = upToDateKadaiList.findIndex((kadai) => {
                     return (kadai.lectureID === lectureID);
@@ -114,7 +109,6 @@ function parseKadai(data) {
         let temp = {}
         let lecID = item[i].context;
         let kid = item[i].id;
-        let status = item[i].status;
         let title = item[i].title;
         let due = item[i].dueTime.time;
         // add only available kadai
@@ -150,9 +144,7 @@ function parseKadai(data) {
 }
 
 function getKadaiFromPandA() {
-    // console.log('panda');
     return $.ajax({
-        // url: "https://das82.com/my.json",
         url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
         dataType: "json",
         type: "get",
@@ -175,11 +167,8 @@ function updateVisited(lectureID) {
         const q = hasNewItem.findIndex((kadai) => {
             return (kadai.lectureID === lectureID);
         });
-        // console.log('q',q);
         if (q !== -1) {
-
             hasNewItem[q].isUpdate = 0;
-            // console.log('updateVisit',hasNewItem);
             saveHasNew(hasNewItem);
         }
 
