@@ -1,7 +1,7 @@
 {
   "name": "Comfortable PandA",
   "description": "Makes our PandA life more comfortable!",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 2,
   "icons": {
     "16": "img/icon16.png",
@@ -27,7 +27,6 @@
         "css/custom-panda.css"
       ],
       "matches": [
-        "https://das82.com/*",
         "https://panda.ecs.kyoto-u.ac.jp/*"
       ]
     }
@@ -39,8 +38,6 @@
     "persistent": false
   },
   "permissions": [
-    "activeTab",
-    "declarativeContent",
     "storage"
   ],
   "web_accessible_resources": [

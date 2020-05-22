@@ -30,3 +30,4 @@ If you open kadai page, badge will disappear.(Currently developing)
 # Update Log
 - 2020/05/20 v0.9.0 Prototype release
 - 2020/05/21 v1.0.0 Release
+- 2020/05/22 v1.0.1 Fixed some minor bugs & refactored
