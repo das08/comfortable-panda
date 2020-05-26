@@ -32,6 +32,7 @@ If you open lecture page with notification badge on, the badge will disappear.
 - 2020/05/20 v0.9.0 Prototype release
 - 2020/05/21 v1.0.0 Release
 - 2020/05/22 v1.0.1 Fixed some minor bugs & refactored
+- 2020/05/26 v1.0.2 Fixed notification badge related bug
 
 # License
 MIT

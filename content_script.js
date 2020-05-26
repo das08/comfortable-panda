@@ -323,6 +323,9 @@ function display() {
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
+        console.log('get kadai from panda',parsedKadai);
+        console.log(parsedKadai.length);
+        if(parsedKadai.length===0)return;
         // 2. Get old kadai from storage
         getFromStorage('kadai').then(function (storedKadai) {
             // 3. If there is no kadai in storege -> initialize
@@ -335,7 +338,10 @@ function display() {
 
                 // 4. Get visited history
                 getFromStorage('hasNewItem').then(function (hasNewItem) {
-                    //
+
+                    if (typeof hasNewItem === 'undefined') {
+                        hasNewItem=[];
+                    }
                     console.log('fetch stored hasNewItem', hasNewItem);
 
                     let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
