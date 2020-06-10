@@ -1,7 +1,7 @@
 {
   "name": "Comfortable PandA",
   "description": "Makes our PandA life more comfortable!",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "manifest_version": 2,
   "icons": {
     "16": "img/icon16.png",
@@ -41,6 +41,7 @@
     "storage"
   ],
   "web_accessible_resources": [
-    "css/custom-panda.css"
+    "css/custom-panda.css",
+    "img/logo.png"
   ]
 }
