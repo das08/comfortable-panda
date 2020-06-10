@@ -25,7 +25,11 @@ function insertJS() {
         "      }\n" +
         "      toggle = 1 - toggle;\n" +
         "    };";
-    document.head.appendChild(js);
+    try{
+        document.head.appendChild(js);
+    }catch (e) {
+        console.log("error");
+    }
 
 }
 
@@ -73,7 +77,11 @@ function insertSideNav(parsedKadai, lectureIDList) {
     let hamburger = document.createElement('span');
     hamburger.id = "hamburger";
     hamburger.textContent = "☰";
-    topbar.appendChild(hamburger);
+    try{
+        topbar.appendChild(hamburger);
+    }catch (e) {
+        console.log("error")
+    }
 
 
     var parent = document.getElementById('container');
