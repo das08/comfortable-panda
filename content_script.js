@@ -1,13 +1,195 @@
 function insertCSS() {
     let css = document.createElement('link');
+    css.rel = "stylesheet";
+    css.type = "text/css";
     css.href = chrome.extension.getURL('css/custom-panda.css');
     document.body.appendChild(css);
 }
+
+function insertJS() {
+    let js = document.createElement('script');
+    js.textContent = "" +
+
+        "      let btn = document.getElementById('close_btn');\n" +
+        "      btn.onclick = toggleNav;\n" +
+        "      let ham = document.getElementById('hamburger');\n" +
+        "      ham.onclick = toggleNav;\n" +
+        "    \n" +
+        "      let toggle = false;\n" +
+        "    function toggleNav() {\n" +
+
+        "      if (toggle) {\n" +
+        "        document.getElementById(\"mySidenav\").style.width = \"0\";\n" +
+        "      } else {\n" +
+        "        document.getElementById(\"mySidenav\").style.width = \"300px\";\n" +
+        "      }\n" +
+        "      toggle = 1 - toggle;\n" +
+        "    };";
+    document.head.appendChild(js);
+
+}
+
+function parseID(lectureIDList) {
+    let idList = {};
+    for (let i = 0; i < lectureIDList.length; i++) {
+        let id = lectureIDList[i].lectureID;
+        idList[id] = lectureIDList[i].lectureName;
+    }
+    console.log(idList);
+    return idList;
+}
+
+function sortKadai(parsedKadai) {
+    console.log("s", parsedKadai.length);
+    for (let i = 0; i < parsedKadai.length; i++) {
+        let kadaiList = parsedKadai[i].kadaiList;
+        kadaiList.sort(function (a, b) {
+            if (a.dueTimeStamp < b.dueTimeStamp) return -1;
+            if (a.dueTimeStamp > b.dueTimeStamp) return 1;
+            if (a.kadaiTitle < b.kadaiTitle) return -1;
+            if (a.kadaiTitle > b.kadaiTitle) return 1;
+            return 0;
+        });
+        console.log(i, kadaiList);
+        parsedKadai[i].kadaiList = kadaiList;
+    }
+    return parsedKadai;
+}
+
+function getTimeRemain(_remainTime) {
+    let day   = Math.floor(_remainTime / (3600*24));
+    let hours = Math.floor((_remainTime - (day * 3600 * 24)) / 3600);
+    let minutes = Math.floor((_remainTime - (day * 3600*24+hours*3600)) / 60);
+
+    return [day,hours,minutes]
+
+}
+
+function insertSideNav(parsedKadai, lectureIDList) {
+    let idList = parseID(lectureIDList);
+    parsedKadai = sortKadai(parsedKadai);
+
+    let topbar = document.getElementById("mastHead");
+    let hamburger = document.createElement('span');
+    hamburger.id = "hamburger";
+    hamburger.textContent = "☰";
+    topbar.appendChild(hamburger);
+
+
+    var parent = document.getElementById('container');
+    var ref = document.getElementById('toolMenuWrap');
+    var main_div = document.createElement('div');
+    main_div.className = "sidenav";
+    main_div.id = "mySidenav";
+
+    var img = chrome.extension.getURL("img/logo.png");
+    let logo = document.createElement("img");
+    logo.className = "logo";
+    logo.alt = "logo";
+    logo.src = img;
+
+    var a = document.createElement('a');
+    a.href = '#';
+    a.id = "close_btn";
+    a.classList.add("closebtn");
+    a.classList.add("q");
+    a.textContent = "×";
+
+    let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
+    let header_color = ["danger", "warning", "success", "other"];
+
+    var header = document.createElement('div');
+    var header_title = document.createElement('span');
+    header_title.className = "q";
+    var list_container = document.createElement('div');
+    list_container.className = "sidenav-list";
+    var list_body = document.createElement('div');
+    var h2 = document.createElement('h2');
+
+    var p_date = document.createElement('p');
+    p_date.className = "kadai-date";
+    var remain = document.createElement('span');
+    remain.className = "time-remain";
+    // p_date.textContent="2020/06/02 23:55";
+    var p_title = document.createElement('p');
+    p_title.className = "kadai-title";
+    // p_title.textContent="総合課題";
+
+    main_div.appendChild(logo);
+    main_div.appendChild(a);
+
+
+    for (let i = 0; i < 4; i++) {
+        // header begin //
+        var C_header = header.cloneNode(true);
+        var C_header_title = header_title.cloneNode(true);
+        C_header.className = `sidenav-${header_color[i]}`;
+        C_header_title.textContent = `${header_list[i]}`;
+        main_div.appendChild(C_header);
+        // header end //
+
+        // list begin //
+        var C_list_container = list_container.cloneNode(true);
+        for (let item = 0; item < parsedKadai.length; item++) {
+            let kadaiList = parsedKadai[item].kadaiList;
+            let lectureID = parsedKadai[item].lectureID;
+
+            var C_list_body = list_body.cloneNode(true);
+            C_list_body.className = `kadai-${header_color[i]}`;
+
+            let lectureName = idList[lectureID];
+            if (lectureName === undefined) lectureName = "不明";
+
+            var C_h2 = h2.cloneNode(true);
+            C_h2.className = `lecture-${header_color[i]}`;
+            C_h2.textContent = "" + lectureName;
+            C_list_body.appendChild(C_h2);
+
+            let cnt = 0;
+            for (let id = 0; id < kadaiList.length; id++) {
+                let date = p_date.cloneNode(true);
+                let remain_time = remain.cloneNode(true);
+                let title = p_title.cloneNode(true);
+
+                let dueTime = kadaiList[id].dueTimeStamp;
+                let _date = new Date(dueTime);
+                let kadaiTitle = kadaiList[id].kadaiTitle;
+                let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
+                let timeRemain=getTimeRemain((dueTime-new Date().getTime())/1000);
+
+                let daysUntilDue = diffDays(new Date().getTime(), dueTime);
+                if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue >5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && i === 3)) {
+                    date.textContent = "" + dispDue;
+                    remain_time.textContent=`あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
+                    title.textContent = "" + kadaiTitle;
+                    C_list_body.appendChild(date);
+                    C_list_body.appendChild(remain_time);
+                    C_list_body.appendChild(title);
+                    cnt++;
+                }
+            }
+            if (cnt > 0) {
+                C_list_container.appendChild(C_list_body);
+                C_header.appendChild(C_header_title);
+            }
+
+
+        }
+
+        // list end //
+
+        main_div.appendChild(C_list_container);
+    }
+
+    parent.insertBefore(main_div, ref);
+}
+
 
 const defaultTab = document.querySelectorAll('.nav-menu');
 const defaultTabCount = Object.keys(defaultTab).length;
 const otherSiteTab = document.querySelectorAll('#otherSiteList > li');
 const otherSiteTabCount = Object.keys(otherSiteTab).length;
+
 
 function diffDays(dt1, dt2) {
 
@@ -77,22 +259,27 @@ function getTabList() {
     let lectureIDList = [];
 
     for (let i = 2; i < defaultTabCount; i++) {
-        let tmpTab = {}
+        let tmpTab = {};
 
         let lectureID = defaultTab[i].getElementsByTagName('a')[0].getAttribute('href').slice(-17);
+        let lectureID2 = defaultTab[i].getElementsByTagName('span')[1].getAttribute('data');
+        let lectureName = defaultTab[i].getElementsByTagName('a')[0].getAttribute('title').split("]")[1];
 
         tmpTab.type = 'default';
-        tmpTab.lectureID = lectureID;
+        tmpTab.lectureID = lectureID2;
+        tmpTab.lectureName = lectureName;
 
         lectureIDList.push(tmpTab);
 
     }
     for (let i = 0; i < otherSiteTabCount; i++) {
-        let tmpTab = {}
+        let tmpTab = {};
         let lectureID = otherSiteTab[i].getElementsByTagName('a')[0].getAttribute('href').slice(-17);
+        let lectureName = otherSiteTab[i].getElementsByTagName('a')[0].getAttribute('title').split("]")[1];
 
         tmpTab.type = 'otherSite';
         tmpTab.lectureID = lectureID;
+        tmpTab.lectureName = lectureName;
 
         lectureIDList.push(tmpTab);
 
@@ -103,10 +290,10 @@ function getTabList() {
 }
 
 function parseKadai(data) {
-    let parsedKadai = []
+    let parsedKadai = [];
     let item = data.assignment_collection;
     for (let i = 0; i < item.length; i++) {
-        let temp = {}
+        let temp = {};
         let lecID = item[i].context;
         let kid = item[i].id;
         let title = item[i].title;
@@ -115,7 +302,7 @@ function parseKadai(data) {
         if (due <= new Date().getTime()) {
             continue;
         }
-        let kadaiDict = {kid: kid, dueTimeStamp: due, kadaiTitle: title}
+        let kadaiDict = {kid: kid, dueTimeStamp: due, kadaiTitle: title};
 
         // すでに科目がListにあるか見る
         const q = parsedKadai.findIndex((kadai) => {
@@ -139,7 +326,6 @@ function parseKadai(data) {
 
 
     }
-    console.log(parsedKadai);
     return parsedKadai;
 }
 
@@ -254,7 +440,7 @@ function compare(parsedKadai, storedKadai) {
 
     // 最新の課題を基準に1つずつ見ていく
     for (let i = 0; i < parsedKadai.length; i++) {
-        let tmp = {}
+        let tmp = {};
         let lectureID = parsedKadai[i].lectureID;
         let closestTime = parsedKadai[i].closestTime;
         let farthestTime = parsedKadai[i].farthestTime;
@@ -294,10 +480,10 @@ function isPandAOK() {
     let pandaStatus = true;
     getFromStorage('lastModified').then(function (lastModified) {
 
-        if (typeof lastModified !== 'undefined' && (new Date().getTime() - lastModified)/1000 <= 30) {
+        if (typeof lastModified !== 'undefined' && (new Date().getTime() - lastModified) / 1000 <= 30) {
             pandaStatus = false;
         }
-        console.log('last',lastModified,(new Date().getTime() - lastModified)/1000,pandaStatus);
+        // console.log('last', lastModified, (new Date().getTime() - lastModified) / 1000, pandaStatus);
     });
     return pandaStatus;
 }
@@ -314,7 +500,7 @@ function getSiteID() {
 
 function update() {
     if (getSiteID() && getSiteID().length === 17) {
-        console.log('visited', getSiteID());
+        // console.log('visited', getSiteID());
         updateVisited(getSiteID());
     }
 }
@@ -323,9 +509,10 @@ function display() {
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
-        console.log('get kadai from panda',parsedKadai);
-        console.log(parsedKadai.length);
-        if(parsedKadai.length===0)return;
+        if (parsedKadai.length === 0) return;
+        // test
+        insertSideNav(parsedKadai, getTabList());
+        insertJS();
         // 2. Get old kadai from storage
         getFromStorage('kadai').then(function (storedKadai) {
             // 3. If there is no kadai in storege -> initialize
@@ -340,12 +527,12 @@ function display() {
                 getFromStorage('hasNewItem').then(function (hasNewItem) {
 
                     if (typeof hasNewItem === 'undefined') {
-                        hasNewItem=[];
+                        hasNewItem = [];
                     }
-                    console.log('fetch stored hasNewItem', hasNewItem);
+                    // console.log('fetch stored hasNewItem', hasNewItem);
 
                     let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
-                    console.log('notificationList', notificationList);
+                    // console.log('notificationList', notificationList);
 
                     saveHasNew(notificationList);
                     saveKadai(parsedKadai);
@@ -359,12 +546,11 @@ function display() {
 }
 
 function main() {
-    if (isPandAOK()){
-        console.log("you can hurry panda!");
+    if (isPandAOK()) {
+        // console.log("you can hurry panda!");
         display();
-    }
-    else{
-        console.log("dont hurry panda!");
+    } else {
+        // console.log("dont hurry panda!");
         getFromStorage('hasNewItem').then(function (hasNewItem) {
             addNotificationBadge(getTabList(), hasNewItem);
         });

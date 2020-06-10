@@ -26,3 +26,199 @@
     padding: 1px;
     border: 1.2px solid #fffefe;
 }
+.sidenav {
+    height: 90vh;
+    width: 0;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    background-color: #cacaca;
+    transition: 0.5s;
+    padding-top: 60px;
+    overflow: auto;
+    border-radius: 8px;
+}
+
+.sidenav .q{
+    padding: 8px 8px 8px 8px;
+    text-decoration: none;
+    /* font-size: 25px; */
+    font-weight: 600;
+    color: #252121;
+    display: block;
+    transition: 0.3s;
+}
+
+/*.sidenav .q:hover{*/
+/*    color: #f1f1f1;*/
+/*}*/
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 15px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+.sidenav-danger {
+    position: relative;
+    padding: 0.1em 0.5em;
+    border-left: solid 6px #e85555;
+    border-bottom: solid 2px #e85555;
+    background: #f1cdcd;
+    border-radius: 5px;
+}
+
+.sidenav-warning {
+    position: relative;
+    padding: 0.1em 0.5em;
+    border-left: solid 6px #d7aa57;
+    border-bottom: solid 2px #d7aa57;
+    background: #e2d4bf;
+    border-radius: 5px;
+}
+
+.sidenav-success {
+    position: relative;
+    padding: 0.1em 0.5em;
+    border-left: solid 6px #62b665;
+    border-bottom: solid 2px #62b665;
+    background: #cce6cf;
+    border-radius: 5px;
+}
+.sidenav-other {
+    position: relative;
+    padding: 0.1em 0.5em;
+    border-left: solid 6px #777777;
+    border-bottom: solid 2px #777777;
+    background: #dad6d6;
+    border-radius: 5px;
+}
+
+.sidenav-list {
+    padding: 20px 8px 8px 8px;
+    text-decoration: none;
+    color: #818181;
+    display: block;
+}
+
+
+.sidenav-list .lecture-danger {
+    font-size: 12px;
+    font-weight: 400!important;
+    color: #f7f7f7;
+    width: fit-content;
+    padding: 3px 10px;
+    margin: 0px;
+    margin-top: -12px;
+    margin-left: -5px;
+    background: #e85555;
+    border-radius: 20px 20px 20px 20px;
+}
+.sidenav-list .lecture-warning {
+    font-size: 12px;
+    font-weight: 400!important;
+    color: #f7f7f7;
+    width: fit-content;
+    padding: 3px 10px;
+    margin: 0px;
+    margin-top: -12px;
+    margin-left: -5px;
+    background: #d7aa57;
+    border-radius: 20px 20px 20px 20px;
+}
+.sidenav-list .lecture-success {
+    font-size: 12px;
+    font-weight: 400!important;
+    color: #f7f7f7;
+    width: fit-content;
+    padding: 3px 10px;
+    margin: 0px;
+    margin-top: -12px;
+    margin-left: -5px;
+    background: #62b665;
+    border-radius: 20px 20px 20px 20px;
+}
+.sidenav-list .lecture-other {
+    font-size: 12px;
+    font-weight: 400!important;
+    color: #f7f7f7;
+    width: fit-content;
+    padding: 3px 10px;
+    margin: 0px;
+    margin-top: -12px;
+    margin-left: -5px;
+    background: #777777;
+    border-radius: 20px 20px 20px 20px;
+}
+
+.sidenav-list p {
+    list-style-type: initial;
+    font-size: 14px;
+    padding-left: 10px;
+    margin: 5px;
+}
+.sidenav-list .kadai-date {
+    display: inline-block;
+}
+
+.kadai-danger {
+    border-top: solid 2px #e85555;
+    border-left: solid 2px #e85555;
+    border-bottom: solid 2px #e85555;
+    border-right: solid 2px #e85555;
+    border-radius: 10px 10px 10px 10px;
+    margin-bottom: 20px;
+}
+
+.kadai-warning {
+    border-top: solid 2px #d7aa57;
+    border-left: solid 2px #d7aa57;
+    border-bottom: solid 2px #d7aa57;
+    border-right: solid 2px #d7aa57;
+    border-radius: 10px 10px 10px 10px;
+    margin-bottom: 20px;
+}
+
+.kadai-success {
+    border-top: solid 2px #62b665;
+    border-left: solid 2px #62b665;
+    border-bottom: solid 2px #62b665;
+    border-right: solid 2px #62b665;
+    border-radius: 10px 10px 10px 10px;
+    margin-bottom: 20px;
+}
+
+.kadai-other {
+    border-top: solid 2px #777777;
+    border-left: solid 2px #777777;
+    border-bottom: solid 2px #777777;
+    border-right: solid 2px #777777;
+    border-radius: 10px 10px 10px 10px;
+    margin-bottom: 20px;
+}
+.kadai-date {
+    font-size: 10px !important;
+    font-weight: bold;
+    color: #b01011
+}
+
+.kadai-title {
+    font-size: 12px !important;
+    color: #524e4e;
+}
+#hamburger{
+    font-size:30px;cursor:pointer;position: absolute;right: 10px;bottom: 0px;
+}
+.logo{
+    position: absolute;
+    top: 7px;
+    left: 2px;
+    height: 40px;
+}
+.time-remain{
+    font-weight: bold;
+    font-size: 12px;
+}
