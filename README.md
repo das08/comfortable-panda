@@ -28,11 +28,17 @@ Tells your unchecked latest assignments.
 
 If you open lecture page with notification badge on, the badge will disappear.
 
+## Side-menu
+Click ☰ to open side-menu.
+All available kadai will be displayed inside the side-menu.
+
+
 # Update Log
 - 2020/05/20 v0.9.0 Prototype release
 - 2020/05/21 v1.0.0 Release
 - 2020/05/22 v1.0.1 Fixed some minor bugs & refactored
 - 2020/05/26 v1.0.2 Fixed notification badge related bug
+- 2020/06/10 v1.1.0 Added side menu for displaying all available kadais.
 
 # License
 MIT
