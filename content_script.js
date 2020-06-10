@@ -350,6 +350,7 @@ function getFromStorage(key) {
 function updateVisited(lectureID) {
     getFromStorage('hasNewItem').then(function (hasNewItem) {
         // console.log('fetch hasNewitem', hasNewItem);
+        if(hasNewItem===undefined)return 0;
         const q = hasNewItem.findIndex((kadai) => {
             return (kadai.lectureID === lectureID);
         });
