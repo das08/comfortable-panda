@@ -35,12 +35,12 @@ function parseID(lectureIDList) {
         let id = lectureIDList[i].lectureID;
         idList[id] = lectureIDList[i].lectureName;
     }
-    console.log(idList);
+    // console.log(idList);
     return idList;
 }
 
 function sortKadai(parsedKadai) {
-    console.log("s", parsedKadai.length);
+    // console.log("s", parsedKadai.length);
     for (let i = 0; i < parsedKadai.length; i++) {
         let kadaiList = parsedKadai[i].kadaiList;
         kadaiList.sort(function (a, b) {
@@ -50,7 +50,7 @@ function sortKadai(parsedKadai) {
             if (a.kadaiTitle > b.kadaiTitle) return 1;
             return 0;
         });
-        console.log(i, kadaiList);
+        // console.log(i, kadaiList);
         parsedKadai[i].kadaiList = kadaiList;
     }
     return parsedKadai;
