@@ -8,23 +8,25 @@ function insertCSS() {
 
 function insertJS() {
     let js = document.createElement('script');
-    js.textContent = "" +
-
-        "      let btn = document.getElementById('close_btn');\n" +
-        "      btn.onclick = toggleNav;\n" +
-        "      let ham = document.getElementById('hamburger');\n" +
-        "      ham.onclick = toggleNav;\n" +
-        "    \n" +
-        "      let toggle = false;\n" +
-        "    function toggleNav() {\n" +
-
-        "      if (toggle) {\n" +
+    js.textContent = "let btn = document.getElementById('close_btn');\n" +
+        "btn.onclick = toggleNav;\n" +
+        "let ham = document.getElementById('hamburger');\n" +
+        "ham.onclick = toggleNav;\n" +
+        "\n" +
+        "let toggle = false;\n" +
+        "function toggleNav() {\n" +
+        "    if (toggle) {\n" +
         "        document.getElementById(\"mySidenav\").style.width = \"0\";\n" +
-        "      } else {\n" +
+        "        document.getElementById(\"cover\").remove();\n" +
+        "    } else {\n" +
         "        document.getElementById(\"mySidenav\").style.width = \"300px\";\n" +
-        "      }\n" +
-        "      toggle = 1 - toggle;\n" +
-        "    };";
+        "        let cover = document.createElement(\"div\");\n" +
+        "        cover.id=\"cover\";\n" +
+        "        document.getElementsByTagName(\"body\")[0].appendChild(cover);\n" +
+        "        cover.onclick = toggleNav;\n" +
+        "    }\n" +
+        "    toggle = 1 - toggle;\n" +
+        "}";
     try{
         document.head.appendChild(js);
     }catch (e) {
@@ -128,12 +130,12 @@ function insertSideNav(parsedKadai, lectureIDList) {
 
 
     for (let i = 0; i < 4; i++) {
+        let item_cnt=0;
         // header begin //
         var C_header = header.cloneNode(true);
         var C_header_title = header_title.cloneNode(true);
         C_header.className = `sidenav-${header_color[i]}`;
         C_header_title.textContent = `${header_list[i]}`;
-        main_div.appendChild(C_header);
         // header end //
 
         // list begin //
@@ -179,14 +181,18 @@ function insertSideNav(parsedKadai, lectureIDList) {
             if (cnt > 0) {
                 C_list_container.appendChild(C_list_body);
                 C_header.appendChild(C_header_title);
+                item_cnt++;
             }
-
-
         }
-
         // list end //
 
-        main_div.appendChild(C_list_container);
+
+        if(item_cnt>0){
+            main_div.appendChild(C_header);
+            main_div.appendChild(C_list_container);
+        }
+
+
     }
     try{
         parent.insertBefore(main_div, ref);
