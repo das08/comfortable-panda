@@ -188,8 +188,11 @@ function insertSideNav(parsedKadai, lectureIDList) {
 
         main_div.appendChild(C_list_container);
     }
-
-    parent.insertBefore(main_div, ref);
+    try{
+        parent.insertBefore(main_div, ref);
+    }catch (e) {
+        console.log("error");
+    }
 }
 
 
