@@ -39,6 +39,7 @@ All available kadai will be displayed inside the side-menu.
 - 2020/05/22 v1.0.1 Fixed some minor bugs & refactored
 - 2020/05/26 v1.0.2 Fixed notification badge related bug
 - 2020/06/10 v1.1.0 Added side menu for displaying all available kadais.
+- 2020/06/11 v1.1.3 Minor bug fix & enhancement.
 
 # License
 MIT
