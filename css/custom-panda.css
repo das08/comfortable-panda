@@ -169,7 +169,7 @@
 .sidenav-list p {
     list-style-type: initial;
     font-size: 14px;
-    padding-left: 10px;
+    /*padding-left: 10px;*/
     margin: 5px;
 }
 
@@ -250,4 +250,40 @@
     top: 0;
     left: 0;
     opacity: 0;
+}
+.todo-check{
+    margin-left: 10px;
+    height: 10px;
+    /*display: none;*/
+}
+
+
+.todo-check:checked + .task-text {
+    text-decoration: none;
+    background-image: -webkit-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
+    background-image:    -moz-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
+    background-image:     -ms-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
+    background-image:      -o-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
+    background-image:         linear-gradient(transparent .6rem, #2980B9 .6rem, #2980B9 .75rem, transparent .75rem);
+}
+
+.task-text:before {
+    position: absolute;
+    top: -3px;
+    left: -2rem;
+    content: "";
+    display: inline-block;
+    height: 1.25rem;
+    width: 1.25rem;
+    border: 2px solid #2980B9;
+    vertical-align: bottom;
+    margin: 0 10px 0 0;
+}
+
+.todo-check:checked + .task-text:before {
+    content:'\2714';
+    font-size: 1rem;
+    line-height: 1.4rem;
+    text-align: center;
+    color: #2980B9;
 }

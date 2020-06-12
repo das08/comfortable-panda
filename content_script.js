@@ -71,7 +71,7 @@ function getTimeRemain(_remainTime) {
 
 }
 
-function insertSideNav(parsedKadai, lectureIDList) {
+function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     let idList = parseID(lectureIDList);
     parsedKadai = sortKadai(parsedKadai);
 
@@ -116,6 +116,11 @@ function insertSideNav(parsedKadai, lectureIDList) {
     var list_body = document.createElement('div');
     var h2 = document.createElement('h2');
 
+    var p_chkbox = document.createElement('input');
+    p_chkbox.type="checkbox";
+    p_chkbox.className = "todo-check";
+    var p_chkbox_span = document.createElement('span');
+    p_chkbox_span.className="task-text";
     var p_date = document.createElement('p');
     p_date.className = "kadai-date";
     var remain = document.createElement('span');
@@ -157,13 +162,17 @@ function insertSideNav(parsedKadai, lectureIDList) {
 
             let cnt = 0;
             for (let id = 0; id < kadaiList.length; id++) {
+                let chkbox = p_chkbox.cloneNode(true);
+                let chkbox_span = p_chkbox_span.cloneNode(true);
                 let date = p_date.cloneNode(true);
                 let remain_time = remain.cloneNode(true);
                 let title = p_title.cloneNode(true);
 
                 let dueTime = kadaiList[id].dueTimeStamp;
                 let _date = new Date(dueTime);
+                let kid = kadaiList[id].kid;
                 let kadaiTitle = kadaiList[id].kadaiTitle;
+                // let isFinished = kadaiList[id].isFinished;
                 let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
                 let timeRemain=getTimeRemain((dueTime-new Date().getTime())/1000);
 
@@ -172,6 +181,20 @@ function insertSideNav(parsedKadai, lectureIDList) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent=`あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
                     title.textContent = "" + kadaiTitle;
+                    // if(isFinished===1) {
+                    //     chkbox.checked=true;
+                    // }
+                    const q = kadaiListAll.findIndex((kadai) => {
+                        return (kadai.kid === kid);
+                    });
+                    if (q !== -1) {
+                        if(kadaiListAll[q].isFinished===1)chkbox.checked=true;
+                    }
+                    chkbox.kid=kid;
+                    chkbox.lectureID=lectureID;
+                    // chkbox.appendChild(chkbox_span);
+                    chkbox.addEventListener('change', updateKadaiTodo,false);
+                    C_list_body.appendChild(chkbox);
                     C_list_body.appendChild(date);
                     C_list_body.appendChild(remain_time);
                     C_list_body.appendChild(title);
@@ -201,6 +224,22 @@ function insertSideNav(parsedKadai, lectureIDList) {
     }
 }
 
+function updateKadaiTodo(event) {
+    // console.log(event.target.kid);
+    getFromStorage('kadaiTodo').then(function (kadaiTodo) {
+        if (typeof kadaiTodo !== 'undefined') {
+            const q = kadaiTodo.findIndex((kadai) => {
+                return (kadai.kid === event.target.kid);
+            });
+            if (q !== -1) {
+                kadaiTodo[q].isFinished=1-kadaiTodo[q].isFinished;
+            }
+        }
+        saveKadaiTodo(kadaiTodo);
+        console.log("update kadaitodo", event.target.kid);
+
+    });
+}
 
 const defaultTab = document.querySelectorAll('.nav-menu');
 const defaultTabCount = Object.keys(defaultTab).length;
@@ -306,7 +345,7 @@ function getTabList() {
 
 }
 
-function parseKadai(data) {
+function parseKadai(data,types) {
     let parsedKadai = [];
     let item = data.assignment_collection;
     for (let i = 0; i < item.length; i++) {
@@ -315,11 +354,15 @@ function parseKadai(data) {
         let kid = item[i].id;
         let title = item[i].title;
         let due = item[i].dueTime.time;
+        let isFinished=0;
         // add only available kadai
         if (due <= new Date().getTime()) {
             continue;
         }
         let kadaiDict = {kid: kid, dueTimeStamp: due, kadaiTitle: title};
+        if (types==='mini'){
+            kadaiDict = {kid: kid, dueTimeStamp: due, kadaiTitle: title, isFinished: isFinished};
+        }
 
         // すでに科目がListにあるか見る
         const q = parsedKadai.findIndex((kadai) => {
@@ -328,15 +371,19 @@ function parseKadai(data) {
         //無ければ新規作成
         if (q === -1) {
             temp.lectureID = lecID;
-            temp.closestTime = due;
-            temp.farthestTime = due;
             temp.kadaiList = [kadaiDict];
+            if(types!=="mini") {
+                temp.closestTime = due;
+                temp.farthestTime = due;
+            }
             parsedKadai.push(temp);
         } else {
             temp = parsedKadai[q];
             //一番期限がやばい課題のタイムスタンプを記録
-            if (temp.closestTime > due) temp.closestTime = due;
-            if (temp.farthestTime < due) temp.farthestTime = due;
+            if(types!=="mini") {
+                if (temp.closestTime > due) temp.closestTime = due;
+                if (temp.farthestTime < due) temp.farthestTime = due;
+            }
             temp.kadaiList.push(kadaiDict);
             parsedKadai[q] = temp;
         }
@@ -345,6 +392,43 @@ function parseKadai(data) {
     }
     return parsedKadai;
 }
+
+function extractKadai(parsedKadai) {
+    let kadaiListAll=[]
+    for (let i=0;i<parsedKadai.length;i++){
+        let kadaiList=parsedKadai[i].kadaiList;
+        for (let kadai=0;kadai<kadaiList.length;kadai++){
+            let tmp={};
+            tmp.kid=kadaiList[kadai].kid;
+            tmp.isFinished=0;
+            kadaiListAll.push(tmp);
+        }
+    }
+    return kadaiListAll
+}
+
+function getKadaiTodo(parsedKadai) {
+    let kadaiListAll= extractKadai(parsedKadai);
+    getFromStorage('kadaiTodo').then(function (kadaiTodo) {
+        if (typeof kadaiTodo !== 'undefined') {
+            for (let i=0;i<kadaiListAll.length;i++){
+                let kid =kadaiListAll[i].kid;
+                const q = kadaiTodo.findIndex((kadai) => {
+                    return (kadai.kid === kid);
+                });
+                if (q !== -1) {
+                    if(kadaiTodo[q].isFinished===1)kadaiListAll[i].isFinished=1;
+                }
+            }
+        }
+        saveKadaiTodo(kadaiListAll);
+        console.log("kadaiListAll", kadaiListAll);
+        // test
+        insertSideNav(parsedKadai, kadaiListAll,getTabList());
+        insertJS();
+    });
+}
+
 
 function getKadaiFromPandA() {
     return $.ajax({
@@ -400,6 +484,16 @@ function saveHasNew(noticationList) {
         // console.log('stored hasNew');
     });
 }
+
+function saveKadaiTodo(kadaiListAll) {
+    let entity = {};
+
+    entity.kadaiTodo = kadaiListAll;
+    chrome.storage.local.set(entity, function () {
+        // console.log('stored hasNew');
+    });
+}
+
 
 function createNotificationList(upToDateKadaiList, hasNewItem) {
     let notificationList = [];
@@ -528,9 +622,10 @@ function display() {
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
         if (parsedKadai.length === 0) return;
-        // test
-        insertSideNav(parsedKadai, getTabList());
-        insertJS();
+        // // test
+        // insertSideNav(parseKadai(result,'mini'), getTabList());
+        // insertJS();
+        getKadaiTodo(parsedKadai);
         // 2. Get old kadai from storage
         getFromStorage('kadai').then(function (storedKadai) {
             // 3. If there is no kadai in storege -> initialize
