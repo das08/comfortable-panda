@@ -251,39 +251,49 @@
     left: 0;
     opacity: 0;
 }
-.todo-check{
-    margin-left: 10px;
-    height: 10px;
-    /*display: none;*/
-}
 
-
-.todo-check:checked + .task-text {
-    text-decoration: none;
-    background-image: -webkit-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
-    background-image:    -moz-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
-    background-image:     -ms-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
-    background-image:      -o-linear-gradient(transparent 7px,#cc1f1f 7px,#cc1f1f 9px,transparent 9px);
-    background-image:         linear-gradient(transparent .6rem, #2980B9 .6rem, #2980B9 .75rem, transparent .75rem);
-}
-
-.task-text:before {
+.todo-check {
     position: absolute;
-    top: -3px;
-    left: -2rem;
-    content: "";
-    display: inline-block;
-    height: 1.25rem;
-    width: 1.25rem;
-    border: 2px solid #2980B9;
-    vertical-align: bottom;
-    margin: 0 10px 0 0;
+    opacity: 0;
 }
-
-.todo-check:checked + .task-text:before {
-    content:'\2714';
-    font-size: 1rem;
-    line-height: 1.4rem;
-    text-align: center;
-    color: #2980B9;
+.todo-check + label {
+    position: relative;
+    cursor: pointer;
+    padding: 0;
+}
+.todo-check + label:before {
+    content: '';
+    display: inline-block;
+    vertical-align: text-top;
+    width: 15px;
+    height: 15px;
+    background: white;
+    border-radius: 10px;
+    margin-left: 5px;
+    margin-right: 2px;
+}
+.todo-check:checked + label:before {
+    background: #0064cd;
+    border-radius: 10px;
+}
+.todo-check:disabled + label {
+    color: #b8b8b8;
+    cursor: auto;
+}
+.todo-check:disabled + label:before {
+    box-shadow: none;
+    background: #ddd;
+}
+.todo-check:checked + label:after {
+    content: '';
+    position: absolute;
+    left: 2.5px;
+    top: 7px;
+    background: white;
+    width: 2px;
+    height: 2px;
+    box-shadow: 2px 0 0 white, 4px 0 0 white, 4px -2px 0 white, 4px -4px 0 white, 4px -6px 0 white, 4px -8px 0 white;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    margin-left: 5px;
 }

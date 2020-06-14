@@ -119,8 +119,7 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     var p_chkbox = document.createElement('input');
     p_chkbox.type="checkbox";
     p_chkbox.className = "todo-check";
-    var p_chkbox_span = document.createElement('span');
-    p_chkbox_span.className="task-text";
+    var p_label=document.createElement('label');
     var p_date = document.createElement('p');
     p_date.className = "kadai-date";
     var remain = document.createElement('span');
@@ -163,7 +162,7 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
             let cnt = 0;
             for (let id = 0; id < kadaiList.length; id++) {
                 let chkbox = p_chkbox.cloneNode(true);
-                let chkbox_span = p_chkbox_span.cloneNode(true);
+                let label = p_label.cloneNode(true);
                 let date = p_date.cloneNode(true);
                 let remain_time = remain.cloneNode(true);
                 let title = p_title.cloneNode(true);
@@ -172,7 +171,6 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
                 let _date = new Date(dueTime);
                 let kid = kadaiList[id].kid;
                 let kadaiTitle = kadaiList[id].kadaiTitle;
-                // let isFinished = kadaiList[id].isFinished;
                 let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
                 let timeRemain=getTimeRemain((dueTime-new Date().getTime())/1000);
 
@@ -181,20 +179,18 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent=`あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
                     title.textContent = "" + kadaiTitle;
-                    // if(isFinished===1) {
-                    //     chkbox.checked=true;
-                    // }
                     const q = kadaiListAll.findIndex((kadai) => {
                         return (kadai.kid === kid);
                     });
                     if (q !== -1) {
                         if(kadaiListAll[q].isFinished===1)chkbox.checked=true;
                     }
-                    chkbox.kid=kid;
+                    chkbox.id=kid;
                     chkbox.lectureID=lectureID;
-                    // chkbox.appendChild(chkbox_span);
                     chkbox.addEventListener('change', updateKadaiTodo,false);
+                    label.htmlFor=kid;
                     C_list_body.appendChild(chkbox);
+                    C_list_body.appendChild(label);
                     C_list_body.appendChild(date);
                     C_list_body.appendChild(remain_time);
                     C_list_body.appendChild(title);
@@ -229,14 +225,14 @@ function updateKadaiTodo(event) {
     getFromStorage('kadaiTodo').then(function (kadaiTodo) {
         if (typeof kadaiTodo !== 'undefined') {
             const q = kadaiTodo.findIndex((kadai) => {
-                return (kadai.kid === event.target.kid);
+                return (kadai.kid === event.target.id);
             });
             if (q !== -1) {
                 kadaiTodo[q].isFinished=1-kadaiTodo[q].isFinished;
             }
         }
         saveKadaiTodo(kadaiTodo);
-        console.log("update kadaitodo", event.target.kid);
+        console.log("update kadaitodo", event.target.id);
 
     });
 }
