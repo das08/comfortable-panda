@@ -222,6 +222,8 @@
 .kadai-title {
     font-size: 12px !important;
     color: #524e4e;
+    padding-left: 20px;
+    word-break: break-word;
 }
 
 #hamburger {
