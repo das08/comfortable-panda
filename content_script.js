@@ -70,6 +70,19 @@ function getTimeRemain(_remainTime) {
     return [day,hours,minutes]
 
 }
+function toggleKadaiTab() {
+    let kadaiTab=document.querySelector('.kadai-tab');
+    kadaiTab.style.display='';
+    let examTab=document.querySelector('.exam-tab');
+    examTab.style.display='none';
+}
+function toggleExamTab() {
+    let kadaiTab=document.querySelector('.kadai-tab');
+    kadaiTab.style.display='none';
+    let examTab=document.querySelector('.exam-tab');
+    examTab.style.display='';
+    test(["2020-888-N228-002","2020-888-N228-002","2020-888-N228-002"]);
+}
 
 function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     let idList = parseID(lectureIDList);
@@ -89,7 +102,8 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     var parent = document.getElementById('container');
     var ref = document.getElementById('toolMenuWrap');
     var main_div = document.createElement('div');
-    main_div.className = "sidenav";
+    main_div.classList.add("sidenav");
+    main_div.classList.add("cp_tab");
     main_div.id = "mySidenav";
 
     var img = chrome.extension.getURL("img/logo.png");
@@ -105,8 +119,32 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     a.classList.add("q");
     a.textContent = "×";
 
+    let kadaiTab=document.createElement('input');
+    kadaiTab.type='radio';
+    kadaiTab.name='cp_tab';
+    kadaiTab.id='kadaiTab';
+    kadaiTab.addEventListener('click',toggleKadaiTab);
+    kadaiTab.checked=true;
+    let kadaiTabLabel=document.createElement('label');
+    kadaiTabLabel.htmlFor='kadaiTab';
+    kadaiTabLabel.innerText='課題一覧';
+    let examTab=document.createElement('input');
+    examTab.type='radio';
+    examTab.name='cp_tab';
+    examTab.id='examTab';
+    examTab.addEventListener('click',toggleExamTab);
+    examTab.checked=false;
+    let examTabLabel=document.createElement('label');
+    examTabLabel.htmlFor='examTab';
+    examTabLabel.innerText='試験・クイズ一覧';
+
     let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
     let header_color = ["danger", "warning", "success", "other"];
+
+    let kadaiDiv=document.createElement('div');
+    kadaiDiv.className="kadai-tab";
+    let examDiv=document.createElement('div');
+    examDiv.className="exam-tab";
 
     var header = document.createElement('div');
     var header_title = document.createElement('span');
@@ -131,6 +169,10 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
 
     main_div.appendChild(logo);
     main_div.appendChild(a);
+    main_div.appendChild(kadaiTab);
+    main_div.appendChild(kadaiTabLabel);
+    main_div.appendChild(examTab);
+    main_div.appendChild(examTabLabel);
 
 
     for (let i = 0; i < 4; i++) {
@@ -207,8 +249,10 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
 
 
         if(item_cnt>0){
-            main_div.appendChild(C_header);
-            main_div.appendChild(C_list_container);
+            kadaiDiv.appendChild(C_header);
+            kadaiDiv.appendChild(C_list_container);
+            main_div.appendChild(kadaiDiv);
+            main_div.appendChild(examDiv);
         }
 
 
@@ -667,7 +711,36 @@ function main() {
     update();
 }
 
+function test(lecID){
+    let promiseResult=[];
+    // const lecID=["2020-888-N228-002","2020-888-N228-002","2020-888-N228-002"];
+
+    async function get(url){
+        return fetch(`https://aaa.com/direct/sam_pub/context/${url}.json`).then((response)=>{return response.json()});
+    }
+    for (let id of lecID){
+        promiseResult.push(get(id));
+    }
+
+    Promise.all(promiseResult)
+        .then((exam)=>{
+            const lectureCount = exam.length;
+            for (let i=0;i<lectureCount;i++){
+                const examInfo=exam[i].sam_pub_collection;
+                let examCount=examInfo.length;
+                for(let j=0;j<examCount;j++){
+                    console.log(examInfo[j].title,examInfo[j].dueDate);
+                }
+            }
+        })
+        .catch((value)=>{
+            console.log(value);
+        });
+}
+
+
 
 insertCSS();
 main();
+
 
