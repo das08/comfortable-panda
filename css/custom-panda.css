@@ -308,11 +308,11 @@
     padding: 0;
     border: none;
     border-radius: 0;
-    outline: none;
-    background: none;
+    outline: antiquewhite;
+    background: salmon;
     -webkit-appearance: none;
     appearance: none;
-    display: none;
+    /*display: "";*/
 }
 .cp_tab .cp_tabpanel {
     display: none;
@@ -328,21 +328,22 @@
 .cp_tab > label {
     position: relative;
     display: inline-block;
-    padding: 15px;
+    padding: 10px;
     cursor: pointer;
-    border: 1px solid transparent;
+    /*border: 1px solid transparent;*/
     border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    /*     background:#d2dfdf */
+    border-color: #9b9898
 }
-.cp_tab > label:hover,
-.cp_tab > input:focus + label {
-    color: #111112;
-}
+
 .cp_tab > input:checked + label {
     margin-bottom: -1px;
-    border-color: #262626;
-    border-bottom: 1px solid #ffffff;/*背景色と同じ*/
+    border-color: #a5a5a5;
+    border-bottom: 1px solid #b0b0b0;/*背景色と同じ*/
     border-radius: 6px 6px 0 0;
-    background-color:#bbeeee
+    background-color:#6483d3;
+    color: #fffdfd;
 }
 
 @media (max-width: 480px) {
@@ -354,3 +355,29 @@
         padding: 0.5em;
     }
 }
+.btn-square {
+    position: relative;
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    text-decoration: none;
+    color: #FFF;
+    font-size: 12px;
+    background: #f16262;
+    border: solid 1px #bc2020;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+    text-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+.btn-square:active {
+    /*border: solid 1px #03A9F4;*/
+    box-shadow: none;
+    text-shadow: none;
+}
+.examBox{
+    padding-bottom: 10px;
+    padding-left: 10px;
+    margin: 10px;
+    border: inset;
+}
+

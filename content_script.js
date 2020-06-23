@@ -81,14 +81,38 @@ function toggleExamTab() {
     kadaiTab.style.display='none';
     let examTab=document.querySelector('.exam-tab');
     examTab.style.display='';
-    // test();
-    test2();
+    loadExamfromStorage();
 }
+
+//----------- miniPandA setting --------------//
+let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
+let header_color = ["danger", "warning", "success", "other"];
+
+var header = document.createElement('div');
+var header_title = document.createElement('span');
+header_title.className = "q";
+var list_container = document.createElement('div');
+list_container.className = "sidenav-list";
+var list_body = document.createElement('div');
+var h2 = document.createElement('h2');
+
+var p_chkbox = document.createElement('input');
+p_chkbox.type="checkbox";
+p_chkbox.className = "todo-check";
+var p_label=document.createElement('label');
+var p_date = document.createElement('p');
+p_date.className = "kadai-date";
+var remain = document.createElement('span');
+remain.className = "time-remain";
+var p_title = document.createElement('p');
+p_title.className = "kadai-title";
+//----------- miniPandA setting --------------//
 
 function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     let idList = parseID(lectureIDList);
     parsedKadai = sortKadai(parsedKadai);
 
+    // add hamburger
     let topbar = document.getElementById("mastHead");
     let hamburger = document.createElement('span');
     hamburger.id = "hamburger";
@@ -98,7 +122,6 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     }catch (e) {
         console.log("error")
     }
-
 
     var parent = document.getElementById('container');
     var ref = document.getElementById('toolMenuWrap');
@@ -137,36 +160,12 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     examTab.checked=false;
     let examTabLabel=document.createElement('label');
     examTabLabel.htmlFor='examTab';
-    examTabLabel.innerText='試験・クイズ一覧';
-
-    let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
-    let header_color = ["danger", "warning", "success", "other"];
+    examTabLabel.innerText='テスト・クイズ一覧';
 
     let kadaiDiv=document.createElement('div');
     kadaiDiv.className="kadai-tab";
     let examDiv=document.createElement('div');
     examDiv.className="exam-tab";
-
-    var header = document.createElement('div');
-    var header_title = document.createElement('span');
-    header_title.className = "q";
-    var list_container = document.createElement('div');
-    list_container.className = "sidenav-list";
-    var list_body = document.createElement('div');
-    var h2 = document.createElement('h2');
-
-    var p_chkbox = document.createElement('input');
-    p_chkbox.type="checkbox";
-    p_chkbox.className = "todo-check";
-    var p_label=document.createElement('label');
-    var p_date = document.createElement('p');
-    p_date.className = "kadai-date";
-    var remain = document.createElement('span');
-    remain.className = "time-remain";
-    // p_date.textContent="2020/06/02 23:55";
-    var p_title = document.createElement('p');
-    p_title.className = "kadai-title";
-    // p_title.textContent="総合課題";
 
     main_div.appendChild(logo);
     main_div.appendChild(a);
@@ -175,7 +174,7 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     main_div.appendChild(examTab);
     main_div.appendChild(examTabLabel);
 
-
+    // generate kadai todo list
     for (let i = 0; i < 4; i++) {
         let item_cnt=0;
         // header begin //
@@ -248,16 +247,12 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
         }
         // list end //
 
-
         if(item_cnt>0){
-            // main_div.appendChild(C_header);
-            // main_div.appendChild(C_list_container);
             kadaiDiv.appendChild(C_header);
             kadaiDiv.appendChild(C_list_container);
             main_div.appendChild(kadaiDiv);
             main_div.appendChild(examDiv);
         }
-
 
     }
     try{
@@ -267,42 +262,36 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     }
 }
 
-function insertSideNavExam(parsedExam,examListAll,lectureIDList) {
+function insertSideNavExam(parsedExam,examListAll,lectureIDList,lastExamGetTime) {
     let idList = parseID(lectureIDList);
 
-    let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
-    let header_color = ["danger", "warning", "success", "other"];
-
-    var header = document.createElement('div');
-    var header_title = document.createElement('span');
-    header_title.className = "q";
-    var list_container = document.createElement('div');
-    list_container.className = "sidenav-list";
-    var list_body = document.createElement('div');
-    var h2 = document.createElement('h2');
-
-    var p_chkbox = document.createElement('input');
-    p_chkbox.type="checkbox";
-    p_chkbox.className = "todo-check";
-    var p_label=document.createElement('label');
-    var p_date = document.createElement('p');
-    p_date.className = "kadai-date";
-    var remain = document.createElement('span');
-    remain.className = "time-remain";
-    // p_date.textContent="2020/06/02 23:55";
-    var p_title = document.createElement('p');
-    p_title.className = "kadai-title";
-    // p_title.textContent="総合課題";
-
     let examDiv=document.querySelector('.exam-tab');
-
     examDiv.innerHTML='';
 
+    let examBox=document.createElement('div');
+    examBox.className="examBox";
+
     let loadButton=document.createElement('button');
-    loadButton.innerText="load";
-    loadButton.addEventListener("click",test,false);
+    loadButton.innerText="テスト・クイズ情報を取得する";
+    loadButton.className="btn-square";
+    loadButton.addEventListener("click",loadExamfromPanda,false);
 
+    let dateTime = new Date(lastExamGetTime);
+    let lastLoad=document.createElement('p');
+    lastLoad.className="lastLoad";
+    lastLoad.innerText="最終更新：　"+dateTime.toLocaleDateString() + " " + dateTime.getHours() + ":" + ('00' + dateTime.getMinutes()).slice(-2)+":" + ('00' + dateTime.getSeconds()).slice(-2);
 
+    let info1=document.createElement('p');
+    info1.innerText="※PandAに若干の負荷がかかるため、必要時以外取得ボタンを押さないようお願いします。"
+    let info2=document.createElement('p');
+    info2.innerText="※各コースサイトの「テスト・クイズ」に関連付けられてないものについては取得できません。取得されたテスト・クイズ一覧は参考程度にご覧ください。"
+
+    examBox.appendChild(lastLoad);
+    examBox.appendChild(loadButton);
+    examBox.appendChild(info1);
+    examBox.appendChild(info2);
+
+    // generate exam todo list
     for (let i = 0; i < 4; i++) {
         let item_cnt=0;
         // header begin //
@@ -381,7 +370,7 @@ function insertSideNavExam(parsedExam,examListAll,lectureIDList) {
         }
         // list end //
 
-        examDiv.appendChild(loadButton);
+        examDiv.appendChild(examBox);
 
         if(item_cnt>0){
             examDiv.appendChild(C_header);
@@ -404,7 +393,7 @@ function updateKadaiTodo(event) {
             }
         }
         saveKadaiTodo(kadaiTodo);
-        console.log("update kadaitodo", event.target.id);
+        // console.log("update kadaitodo", event.target.id);
 
     });
 }
@@ -416,13 +405,13 @@ function updateExamTodo(event) {
             const q = examTodo.findIndex((exam) => {
                 return (exam.eid === parseInt(event.target.id));
             });
-            console.log("find",q,event.target.id);
+            // console.log("find",q,event.target.id);
             if (q !== -1) {
                 examTodo[q].isFinished=1-examTodo[q].isFinished;
             }
         }
         saveExamTodo(examTodo);
-        console.log("update examtodo", event.target.id);
+        // console.log("update examtodo", event.target.id);
 
     });
 }
@@ -608,8 +597,8 @@ function getKadaiTodo(parsedKadai) {
             }
         }
         saveKadaiTodo(kadaiListAll);
-        console.log("kadaiListAll", kadaiListAll);
-        console.log("parsed kadai", parsedKadai);
+        // console.log("kadaiListAll", kadaiListAll);
+        // console.log("parsed kadai", parsedKadai);
         // test
         insertSideNav(parsedKadai, kadaiListAll,getTabList());
         insertJS();
@@ -630,13 +619,7 @@ function getExamTodo(examListAll,parsedExam) {
             }
         }
         saveExamTodo(examListAll,parsedExam);
-        console.log("examListAll", examListAll);
-        // // test
-        // insertSideNav(parsedKadai, kadaiListAll,getTabList());
-        // insertJS();
-        console.log("exam",examListAll);
-        console.log("examParse",parsedExam);
-        insertSideNavExam(parsedExam,examListAll,getTabList());
+        insertSideNavExam(parsedExam,examListAll,getTabList(),new Date().getTime());
     });
 }
 
@@ -710,15 +693,17 @@ function saveExamTodo(examListAll,parsedExam) {
 
     entity.examTodo = examListAll;
     chrome.storage.local.set(entity, function () {
-        // console.log('stored hasNew');
     });
     if(parsedExam!==undefined){
         entity = {};
         entity.parsedExam = parsedExam;
         chrome.storage.local.set(entity, function () {
-            // console.log('stored hasNew');
         });
     }
+    entity = {};
+    entity.lastExamGetTime = new Date().getTime();
+    chrome.storage.local.set(entity, function () {
+    });
 }
 
 
@@ -898,30 +883,28 @@ function main() {
     update();
 }
 
-function test2() {
+function loadExamfromStorage() {
     getFromStorage('parsedExam').then(function (parsedExam) {
         getFromStorage('examTodo').then(function (examToDo) {
-            console.log("1",parsedExam);
-            console.log("2",examToDo);
-            insertSideNavExam(parsedExam,examToDo,getTabList());
+            getFromStorage('lastExamGetTime').then(function (lastExamGetTime) {
+                insertSideNavExam(parsedExam,examToDo,getTabList(),lastExamGetTime);
+            });
         });
     });
 }
 
-function test(){
+function loadExamfromPanda(){
     let lectureIDList =getTabList();
     let lecID=[];
     for (let i=0;i<lectureIDList.length;i++){
         lecID.push(lectureIDList[i].lectureID);
     }
-    // console.log(lecID);
 
     let promiseResult=[];
     // lecID=["2020-888-N228-003","2020-888-N228-002","2020-888-N228-003","2020-888-N228-002"];
-    lecID=["2020-888-N228-003","2020-888-N228-002"];
     let examListAll=[];
     let parsedExam=[];
-    console.log(lecID);
+    // console.log(lecID);
 
     async function get(url){
         return fetch(`https://panda.ecs.kyoto-u.ac.jp/direct/sam_pub/context/${url}.json`).then((response)=>{return response.json()});
@@ -939,10 +922,8 @@ function test(){
                 const examInfo=exam[i].sam_pub_collection;
                 let examCount=examInfo.length;
                 let examList=[];
-                // examTemp.examList=[];
 
                 for(let j=0;j<examCount;j++){
-                    // console.log(examInfo[j].title,examInfo[j].dueDate);
                     let tmp={};
                     examTemp.lectureID=examInfo[j].ownerSiteId;
                     tmp.eid=examInfo[j].publishedAssessmentId;
@@ -951,7 +932,6 @@ function test(){
                     tmp.title=examInfo[j].title;
                     tmp.isFinished=0;
                     examListAll.push(tmp);
-                    // examTemp.examList.push(tmp);
                     examList.push(tmp);
                 }
                 if(examCount!==0){
@@ -962,10 +942,9 @@ function test(){
             }
             getExamTodo(examListAll,parsedExam);
 
-
         })
         .catch((value)=>{
-            console.log("error",value);
+            console.log("error fetching quiz from panda",value);
         });
 }
 
