@@ -280,6 +280,7 @@ function insertSideNavExam(parsedExam,examListAll,lectureIDList,lastExamGetTime)
     let lastLoad=document.createElement('p');
     lastLoad.className="lastLoad";
     lastLoad.innerText="最終更新：　"+dateTime.toLocaleDateString() + " " + dateTime.getHours() + ":" + ('00' + dateTime.getMinutes()).slice(-2)+":" + ('00' + dateTime.getSeconds()).slice(-2);
+    if (lastExamGetTime===undefined)lastLoad.innerText="未取得";
 
     let info1=document.createElement('p');
     info1.innerText="※PandAに若干の負荷がかかるため、必要時以外取得ボタンを押さないようお願いします。"
