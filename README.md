@@ -41,6 +41,7 @@ All available kadai will be displayed inside the side-menu.
 - 2020/06/10 v1.1.0 Added side menu for displaying all available kadais.
 - 2020/06/11 v1.1.3 Minor bug fix & enhancement.
 - 2020/06/13 v1.2.0 Added check button.
+- 2020/06/24 v1.3.0 Added quiz/exam tab.
 
 # License
 MIT
