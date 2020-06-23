@@ -81,7 +81,8 @@ function toggleExamTab() {
     kadaiTab.style.display='none';
     let examTab=document.querySelector('.exam-tab');
     examTab.style.display='';
-    test(["2020-888-N228-002","2020-888-N228-002","2020-888-N228-002"]);
+    // test();
+    test2();
 }
 
 function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
@@ -249,6 +250,8 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
 
 
         if(item_cnt>0){
+            // main_div.appendChild(C_header);
+            // main_div.appendChild(C_list_container);
             kadaiDiv.appendChild(C_header);
             kadaiDiv.appendChild(C_list_container);
             main_div.appendChild(kadaiDiv);
@@ -264,6 +267,131 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     }
 }
 
+function insertSideNavExam(parsedExam,examListAll,lectureIDList) {
+    let idList = parseID(lectureIDList);
+
+    let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
+    let header_color = ["danger", "warning", "success", "other"];
+
+    var header = document.createElement('div');
+    var header_title = document.createElement('span');
+    header_title.className = "q";
+    var list_container = document.createElement('div');
+    list_container.className = "sidenav-list";
+    var list_body = document.createElement('div');
+    var h2 = document.createElement('h2');
+
+    var p_chkbox = document.createElement('input');
+    p_chkbox.type="checkbox";
+    p_chkbox.className = "todo-check";
+    var p_label=document.createElement('label');
+    var p_date = document.createElement('p');
+    p_date.className = "kadai-date";
+    var remain = document.createElement('span');
+    remain.className = "time-remain";
+    // p_date.textContent="2020/06/02 23:55";
+    var p_title = document.createElement('p');
+    p_title.className = "kadai-title";
+    // p_title.textContent="総合課題";
+
+    let examDiv=document.querySelector('.exam-tab');
+
+    examDiv.innerHTML='';
+
+    let loadButton=document.createElement('button');
+    loadButton.innerText="load";
+    loadButton.addEventListener("click",test,false);
+
+
+    for (let i = 0; i < 4; i++) {
+        let item_cnt=0;
+        // header begin //
+        var C_header = header.cloneNode(true);
+        var C_header_title = header_title.cloneNode(true);
+        C_header.className = `sidenav-${header_color[i]}`;
+        C_header_title.textContent = `${header_list[i]}`;
+        // header end //
+
+        // list begin //
+        var C_list_container = list_container.cloneNode(true);
+
+        let parsedExam_length=0;
+        if(parsedExam!==undefined)parsedExam_length=parsedExam.length;
+
+        for (let item = 0; item < parsedExam_length; item++) {
+            let examList = parsedExam[item].examList;
+            let lectureID = parsedExam[item].lectureID;
+
+            var C_list_body = list_body.cloneNode(true);
+            C_list_body.className = `kadai-${header_color[i]}`;
+
+            let lectureName = idList[lectureID];
+            if (lectureName === undefined) lectureName = "不明";
+
+            var C_h2 = h2.cloneNode(true);
+            C_h2.className = `lecture-${header_color[i]}`;
+            C_h2.textContent = "" + lectureName;
+            C_list_body.appendChild(C_h2);
+
+            let cnt = 0;
+
+            for (let id = 0; id < examList.length; id++) {
+                let chkbox = p_chkbox.cloneNode(true);
+                let label = p_label.cloneNode(true);
+                let date = p_date.cloneNode(true);
+                let remain_time = remain.cloneNode(true);
+                let title = p_title.cloneNode(true);
+
+                let dueTime = examList[id].dueDate;
+                let _date = new Date(dueTime);
+                let eid = examList[id].eid;
+                let kadaiTitle = examList[id].title;
+                let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
+                let timeRemain=getTimeRemain((dueTime-new Date().getTime())/1000);
+
+                let daysUntilDue = diffDays(new Date().getTime(), dueTime);
+                if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue >5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && i === 3)) {
+                    date.textContent = "" + dispDue;
+                    remain_time.textContent=`あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
+                    title.textContent = "" + kadaiTitle;
+                    const q = examListAll.findIndex((exam) => {
+                        return (exam.eid === eid);
+                    });
+                    if (q !== -1) {
+                        if(examListAll[q].isFinished===1)chkbox.checked=true;
+                    }
+                    chkbox.id=eid;
+                    chkbox.lectureID=lectureID;
+                    chkbox.addEventListener('change', updateExamTodo,false);
+                    label.htmlFor=eid;
+                    C_list_body.appendChild(chkbox);
+                    C_list_body.appendChild(label);
+                    C_list_body.appendChild(date);
+                    C_list_body.appendChild(remain_time);
+                    C_list_body.appendChild(title);
+                    // console.log(C_list_body);
+                    cnt++;
+                }
+            }
+            if (cnt > 0) {
+                C_list_container.appendChild(C_list_body);
+                C_header.appendChild(C_header_title);
+                item_cnt++;
+            }
+        }
+        // list end //
+
+        examDiv.appendChild(loadButton);
+
+        if(item_cnt>0){
+            examDiv.appendChild(C_header);
+            examDiv.appendChild(C_list_container);
+        }
+
+    }
+}
+
+
 function updateKadaiTodo(event) {
     // console.log(event.target.kid);
     getFromStorage('kadaiTodo').then(function (kadaiTodo) {
@@ -277,6 +405,24 @@ function updateKadaiTodo(event) {
         }
         saveKadaiTodo(kadaiTodo);
         console.log("update kadaitodo", event.target.id);
+
+    });
+}
+
+function updateExamTodo(event) {
+    // console.log(event.target.kid);
+    getFromStorage('examTodo').then(function (examTodo) {
+        if (typeof examTodo !== 'undefined') {
+            const q = examTodo.findIndex((exam) => {
+                return (exam.eid === parseInt(event.target.id));
+            });
+            console.log("find",q,event.target.id);
+            if (q !== -1) {
+                examTodo[q].isFinished=1-examTodo[q].isFinished;
+            }
+        }
+        saveExamTodo(examTodo);
+        console.log("update examtodo", event.target.id);
 
     });
 }
@@ -463,9 +609,34 @@ function getKadaiTodo(parsedKadai) {
         }
         saveKadaiTodo(kadaiListAll);
         console.log("kadaiListAll", kadaiListAll);
+        console.log("parsed kadai", parsedKadai);
         // test
         insertSideNav(parsedKadai, kadaiListAll,getTabList());
         insertJS();
+    });
+}
+
+function getExamTodo(examListAll,parsedExam) {
+    getFromStorage('examTodo').then(function (examTodo) {
+        if (typeof examTodo !== 'undefined') {
+            for (let i=0;i<examListAll.length;i++){
+                let eid =examListAll[i].eid;
+                const q = examListAll.findIndex((exam) => {
+                    return (exam.eid === eid);
+                });
+                if (q !== -1) {
+                    if(examTodo[q].isFinished===1)examListAll[i].isFinished=1;
+                }
+            }
+        }
+        saveExamTodo(examListAll,parsedExam);
+        console.log("examListAll", examListAll);
+        // // test
+        // insertSideNav(parsedKadai, kadaiListAll,getTabList());
+        // insertJS();
+        console.log("exam",examListAll);
+        console.log("examParse",parsedExam);
+        insertSideNavExam(parsedExam,examListAll,getTabList());
     });
 }
 
@@ -532,6 +703,22 @@ function saveKadaiTodo(kadaiListAll) {
     chrome.storage.local.set(entity, function () {
         // console.log('stored hasNew');
     });
+}
+
+function saveExamTodo(examListAll,parsedExam) {
+    let entity = {};
+
+    entity.examTodo = examListAll;
+    chrome.storage.local.set(entity, function () {
+        // console.log('stored hasNew');
+    });
+    if(parsedExam!==undefined){
+        entity = {};
+        entity.parsedExam = parsedExam;
+        chrome.storage.local.set(entity, function () {
+            // console.log('stored hasNew');
+        });
+    }
 }
 
 
@@ -711,12 +898,33 @@ function main() {
     update();
 }
 
-function test(lecID){
+function test2() {
+    getFromStorage('parsedExam').then(function (parsedExam) {
+        getFromStorage('examTodo').then(function (examToDo) {
+            console.log("1",parsedExam);
+            console.log("2",examToDo);
+            insertSideNavExam(parsedExam,examToDo,getTabList());
+        });
+    });
+}
+
+function test(){
+    let lectureIDList =getTabList();
+    let lecID=[];
+    for (let i=0;i<lectureIDList.length;i++){
+        lecID.push(lectureIDList[i].lectureID);
+    }
+    // console.log(lecID);
+
     let promiseResult=[];
-    // const lecID=["2020-888-N228-002","2020-888-N228-002","2020-888-N228-002"];
+    // lecID=["2020-888-N228-003","2020-888-N228-002","2020-888-N228-003","2020-888-N228-002"];
+    lecID=["2020-888-N228-003","2020-888-N228-002"];
+    let examListAll=[];
+    let parsedExam=[];
+    console.log(lecID);
 
     async function get(url){
-        return fetch(`https://aaa.com/direct/sam_pub/context/${url}.json`).then((response)=>{return response.json()});
+        return fetch(`https://panda.ecs.kyoto-u.ac.jp/direct/sam_pub/context/${url}.json`).then((response)=>{return response.json()});
     }
     for (let id of lecID){
         promiseResult.push(get(id));
@@ -725,16 +933,39 @@ function test(lecID){
     Promise.all(promiseResult)
         .then((exam)=>{
             const lectureCount = exam.length;
+            let examTemp={};
+
             for (let i=0;i<lectureCount;i++){
                 const examInfo=exam[i].sam_pub_collection;
                 let examCount=examInfo.length;
+                let examList=[];
+                // examTemp.examList=[];
+
                 for(let j=0;j<examCount;j++){
-                    console.log(examInfo[j].title,examInfo[j].dueDate);
+                    // console.log(examInfo[j].title,examInfo[j].dueDate);
+                    let tmp={};
+                    examTemp.lectureID=examInfo[j].ownerSiteId;
+                    tmp.eid=examInfo[j].publishedAssessmentId;
+                    tmp.lectureID=examInfo[j].ownerSiteId;
+                    tmp.dueDate=examInfo[j].dueDate;
+                    tmp.title=examInfo[j].title;
+                    tmp.isFinished=0;
+                    examListAll.push(tmp);
+                    // examTemp.examList.push(tmp);
+                    examList.push(tmp);
                 }
+                if(examCount!==0){
+                    examTemp.examList=examList;
+                    parsedExam.push(examTemp);
+                }
+
             }
+            getExamTodo(examListAll,parsedExam);
+
+
         })
         .catch((value)=>{
-            console.log(value);
+            console.log("error",value);
         });
 }
 
