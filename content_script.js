@@ -608,17 +608,20 @@ function getKadaiTodo(parsedKadai) {
 
 function getExamTodo(examListAll,parsedExam) {
     getFromStorage('examTodo').then(function (examTodo) {
-        if (typeof examTodo !== 'undefined') {
+        if (typeof examTodo !== 'undefined' && examTodo.length>0) {
             for (let i=0;i<examListAll.length;i++){
                 let eid =examListAll[i].eid;
-                const q = examListAll.findIndex((exam) => {
+                const q = examTodo.findIndex((exam) => {
                     return (exam.eid === eid);
                 });
                 if (q !== -1) {
+                    // console.log(eid,examTodo[q]);
                     if(examTodo[q].isFinished===1)examListAll[i].isFinished=1;
                 }
             }
         }
+        // console.log("all",examListAll);
+        // console.log("pe",parsedExam);
         saveExamTodo(examListAll,parsedExam);
         insertSideNavExam(parsedExam,examListAll,getTabList(),new Date().getTime());
     });
@@ -902,7 +905,7 @@ function loadExamfromPanda(){
     }
 
     let promiseResult=[];
-    // lecID=["2020-888-N228-003","2020-888-N228-002","2020-888-N228-003","2020-888-N228-002"];
+    // lecID=["2020-888-N228-003","2020-888-N228-002"];
     let examListAll=[];
     let parsedExam=[];
     // console.log(lecID);
@@ -917,11 +920,12 @@ function loadExamfromPanda(){
     Promise.all(promiseResult)
         .then((exam)=>{
             const lectureCount = exam.length;
-            let examTemp={};
+
 
             for (let i=0;i<lectureCount;i++){
                 const examInfo=exam[i].sam_pub_collection;
                 let examCount=examInfo.length;
+                let examTemp={};
                 let examList=[];
 
                 for(let j=0;j<examCount;j++){
