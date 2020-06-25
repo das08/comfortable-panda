@@ -118,7 +118,7 @@
     font-size: 12px;
     font-weight: 400 !important;
     color: #f7f7f7;
-    width: fit-content;
+    width: max-content;
     padding: 3px 10px;
     margin: 0px;
     margin-top: -12px;
@@ -131,7 +131,7 @@
     font-size: 12px;
     font-weight: 400 !important;
     color: #f7f7f7;
-    width: fit-content;
+    width: max-content;
     padding: 3px 10px;
     margin: 0px;
     margin-top: -12px;
@@ -144,7 +144,7 @@
     font-size: 12px;
     font-weight: 400 !important;
     color: #f7f7f7;
-    width: fit-content;
+    width: max-content;
     padding: 3px 10px;
     margin: 0px;
     margin-top: -12px;
@@ -157,7 +157,7 @@
     font-size: 12px;
     font-weight: 400 !important;
     color: #f7f7f7;
-    width: fit-content;
+    width: max-content;
     padding: 3px 10px;
     margin: 0px;
     margin-top: -12px;
@@ -381,3 +381,40 @@
     border: inset;
 }
 
+.add-badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    margin-right: 0.5em;
+    font-size: 75%;
+    font-weight: 300;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.add-badge-success {
+    color: #fff;
+    background-color: #28a745;
+}
+/*<span class="add-badge add-badge-success">個人用</span>*/
+.plus-button {
+    margin-left: 45px;
+    margin-bottom: 2px;
+    border: none;
+    display: inline-block;
+    padding: 2px 8px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff!important;
+    background-color: #009688!important;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 24px!important;
+    border-radius: 50%;
+}
+
+/*<button class="plus-button" style="">+</button>*/
