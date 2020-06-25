@@ -84,6 +84,14 @@ function toggleExamTab() {
     loadExamfromStorage();
 }
 
+function todoAdd(event){
+    let todoLecName=document.querySelector(".todoLecName").innerText;
+    let todoContent=document.querySelector(".todoContent").value;
+    let todoDue=document.querySelector(".todoDue").value;
+    console.log(todoLecName,todoContent,todoDue);
+
+}
+
 //----------- miniPandA setting --------------//
 let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
 let header_color = ["danger", "warning", "success", "other"];
@@ -174,6 +182,57 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
     main_div.appendChild(examTab);
     main_div.appendChild(examTabLabel);
 
+    // add edit box
+    let examBox=document.createElement('div');
+    examBox.className="examBox";
+    let todo_label=document.createElement('label');
+    todo_label.style.display="block";
+
+    let todoLecLabel=todo_label.cloneNode(true);
+    todoLecLabel.innerText="講義名";
+    let todoLecSelect=document.createElement('select');
+    todoLecSelect.name="btn-square";
+    let todoLecOption= document.createElement('option');
+    todoLecOption.className="todoLecName";
+
+    for (let i=0;i<5;i++){
+        let c_todoLecOption=todoLecOption.cloneNode(true);
+        c_todoLecOption.value=""+i;
+        c_todoLecOption.text="電気電子回路"+i;
+        todoLecSelect.appendChild(c_todoLecOption);
+    }
+    todoLecLabel.appendChild(todoLecSelect);
+
+    let todoContentLabel=todo_label.cloneNode(true);
+    todoContentLabel.innerText="メモ";
+    let todoContentInput=document.createElement('input');
+    todoContentInput.className="todoContent";
+    todoContentInput.type="text";
+    todoContentLabel.appendChild(todoContentInput);
+
+    let todoDueLabel=todo_label.cloneNode(true);
+    todoDueLabel.innerText="期限";
+    let todoDueInput=document.createElement('input');
+    todoDueInput.type="datetime-local";
+    todoDueInput.className="todoDue";
+    todoDueInput.value="2020-06-12T19:30";
+    todoDueLabel.appendChild(todoDueInput);
+
+    let todoSubmitButton=document.createElement('button');
+    todoSubmitButton.type="submit";
+    todoSubmitButton.id="todo-add";
+    todoSubmitButton.innerText="追加";
+    todoSubmitButton.addEventListener('click',todoAdd,true);
+
+    examBox.appendChild(todoLecLabel);
+    examBox.appendChild(todoContentLabel);
+    examBox.appendChild(todoDueLabel);
+    examBox.appendChild(todoSubmitButton);
+
+    kadaiDiv.appendChild(examBox);
+    // add edit box
+
+
     // generate kadai todo list
     for (let i = 0; i < 4; i++) {
         let item_cnt=0;
@@ -192,6 +251,7 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
 
             var C_list_body = list_body.cloneNode(true);
             C_list_body.className = `kadai-${header_color[i]}`;
+            C_list_body.id=lectureID;
 
             let lectureName = idList[lectureID];
             if (lectureName === undefined) lectureName = "不明";
@@ -246,6 +306,9 @@ function insertSideNav(parsedKadai, kadaiListAll,lectureIDList) {
             }
         }
         // list end //
+
+
+
 
         if(item_cnt>0){
             kadaiDiv.appendChild(C_header);
