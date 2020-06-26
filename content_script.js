@@ -115,7 +115,7 @@ function toggleExamTab() {
     loadExamfromStorage();
 }
 
-function addMemo(kadaiMemo) {
+function addMemo(kadaiMemo,kadaiMemoListAll) {
     let idList = parseID(getTabList());
     //Delete old
     let oldMemo = document.querySelectorAll('.todoMemo');
@@ -134,7 +134,7 @@ function addMemo(kadaiMemo) {
                 let kadaiTitle = kadaiMemoList[memo].kadaiTitle;
 
                 let daysUntilDue = diffDays(new Date().getTime(), dueTime);
-                if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && daysUntilDue <= 1000 &&i === 3)) {
+                if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && daysUntilDue <= 1000 && i === 3)) {
                     let kadaiTodoDiv = document.querySelector(`#${initLetter[i]}${lectureID}`);
 
                     let chkbox = p_chkbox.cloneNode(true);
@@ -164,39 +164,39 @@ function addMemo(kadaiMemo) {
 
                         let parent = document.querySelector(`.sidenav-list-${header_color[i]}`);
                         parent.appendChild(C_list_body);
-                        parent.style.display="";
+                        parent.style.display = "";
                         let header = document.querySelector(`.sidenav-${header_color[i]}`);
-                        header.style.display="";
+                        header.style.display = "";
                         kadaiTodoDiv = document.querySelector(`#${initLetter[i]}${lectureID}`);//todo 不安
 
                     }
 
                     // if (kadaiTodoDiv !== null) {
-                        date.textContent = "" + dispDue;
-                        remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
-                        title.innerHTML = "<span class=\"add-badge add-badge-success\">個人用</span>" + kadaiTitle;
-                        // const q = kadaiListAll.findIndex((kadai) => {
-                        //     return (kadai.kid === kid);
-                        // });
-                        // if (q !== -1) {
-                        //     if (kadaiListAll[q].isFinished === 1) chkbox.checked = true;
-                        // }
-                        chkbox.id = kid;
-                        chkbox.lectureID = lectureID;
-                        // chkbox.addEventListener('change', updateKadaiTodo, false);
-                        label.htmlFor = kid;
+                    date.textContent = "" + dispDue;
+                    remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
+                    title.innerHTML = "<span class=\"add-badge add-badge-success\">個人用</span>" + kadaiTitle;
+                    const q = kadaiMemoListAll.findIndex((kadai) => {
+                        return (kadai.kid === kid);
+                    });
+                    if (q !== -1) {
+                        if (kadaiMemoListAll[q].isFinished === 1) chkbox.checked = true;
+                    }
+                    chkbox.id = kid;
+                    chkbox.lectureID = lectureID;
+                    chkbox.addEventListener('change', updateKadaiMemoTodo, false);
+                    label.htmlFor = kid;
 
-                        //add memo tag
-                        chkbox.classList.add("todoMemo");
-                        label.classList.add("todoMemo");
-                        date.classList.add("todoMemo");
-                        remain_time.classList.add("todoMemo");
-                        title.classList.add("todoMemo");
-                        kadaiTodoDiv.appendChild(chkbox);
-                        kadaiTodoDiv.appendChild(label);
-                        kadaiTodoDiv.appendChild(date);
-                        kadaiTodoDiv.appendChild(remain_time);
-                        kadaiTodoDiv.appendChild(title);
+                    //add memo tag
+                    chkbox.classList.add("todoMemo");
+                    label.classList.add("todoMemo");
+                    date.classList.add("todoMemo");
+                    remain_time.classList.add("todoMemo");
+                    title.classList.add("todoMemo");
+                    kadaiTodoDiv.appendChild(chkbox);
+                    kadaiTodoDiv.appendChild(label);
+                    kadaiTodoDiv.appendChild(date);
+                    kadaiTodoDiv.appendChild(remain_time);
+                    kadaiTodoDiv.appendChild(title);
                     // }
                 }
             }
@@ -205,64 +205,83 @@ function addMemo(kadaiMemo) {
 
 }
 
+function parseKadaiMemo(kadaiMemo,_kadaiMemoListAll) {
+    if(_kadaiMemoListAll===undefined)_kadaiMemoListAll=[];
+    let kadaiMemoListAll=[];
+    for (let item=0;item<kadaiMemo.length;item++){
+        let kadaiMemoList=kadaiMemo[item].kadaiList;
+        let lectureID=kadaiMemo[item].lectureID;
+        for (let kadai=0;kadai<kadaiMemoList.length;kadai++){
+            let kadaiMemoID=kadaiMemoList[kadai].kid;
+            let kadaiMemoTitle=kadaiMemoList[kadai].kadaiTitle;
+            let kadaiMemoDue=kadaiMemoList[kadai].dueTimeStamp;
+            let isFinished=0;
+            const q = _kadaiMemoListAll.findIndex((item) => {
+                return (item.kid === kadaiMemoID);
+            });
+            if(q!==-1){
+                // console.log(_kadaiMemoListAll[q]);
+                isFinished=_kadaiMemoListAll[q].isFinished;
+            }
+            kadaiMemoListAll.push({kid:kadaiMemoID,dueDate:kadaiMemoDue,isFinished:isFinished,lectureID:lectureID,title:kadaiMemoTitle});
+        }
+    }
+    return kadaiMemoListAll;
+}
+
 function todoAdd(event) {
     let selectedIdx = document.querySelector(".todoLecName").selectedIndex;
     let todoLecID = document.querySelector(".todoLecName").options[selectedIdx].id;
     let todoContent = document.querySelector(".todoContent").value;
     let todoDue = document.querySelector(".todoDue").value;
-    let todoTimestamp= new Date(`${todoDue}`).getTime();
+    let todoTimestamp = new Date(`${todoDue}`).getTime();
     // console.log(todoLecID, todoContent, todoDue);
-    getFromStorage('kadaiMemo').then(function (kadaiMemo) {
-        let ll;
-        if (typeof kadaiMemo !== 'undefined' && kadaiMemo.length > 0) {
-            let cnt = 0;
-            // for (let i = 0; i < kadaiMemo.length; i++) {
-                const q = kadaiMemo.findIndex((item) => {
-                    return (item.lectureID === todoLecID);
+    getFromStorage('kadaiMemo').then(function (_kadaiMemo) {
+        let kadaiMemo;
+        if (typeof _kadaiMemo !== 'undefined' && _kadaiMemo.length > 0) {
+            const q = _kadaiMemo.findIndex((item) => {
+                return (item.lectureID === todoLecID);
+            });
+            if (q !== -1) {
+                // console.log(kadaiMemo[q].kadaiList);
+                _kadaiMemo[q].kadaiList.push({
+                    kid: genUniqueStr(),
+                    dueTimeStamp: todoTimestamp,
+                    kadaiTitle: todoContent
                 });
-                if (q !== -1) {
-                    // console.log(kadaiMemo[q].kadaiList);
-                    kadaiMemo[q].kadaiList.push({
-                        kid: genUniqueStr(),
-                        dueTimeStamp: todoTimestamp,
-                        kadaiTitle: todoContent
-                    });
-                }else{
-                        let kadaiList = [{kid: genUniqueStr(), dueTimeStamp: todoTimestamp, kadaiTitle: todoContent}];
-                        let kadai = {lectureID: todoLecID, kadaiList: kadaiList};
-                        kadaiMemo.push(kadai);
-                }
-                // } else {
-                //     cnt++;
-                //     // let kadaiList=[{kid:genUniqueStr(), dueTimeStamp:1593676800000, kadaiTitle:todoContent}];
-                //     // let kadai={lectureID:todoLecID,kadaiList:kadaiList};
-                //     // kadaiMemo.push(kadai);
-                // }
-            // }
-            // if (cnt === kadaiMemo.length) {
-            //     let kadaiList = [{kid: genUniqueStr(), dueTimeStamp: todoTimestamp, kadaiTitle: todoContent}];
-            //     let kadai = {lectureID: todoLecID, kadaiList: kadaiList};
-            //     kadaiMemo.push(kadai);
-            // }
-            ll = kadaiMemo;
+            } else {
+                let kadaiList = [{kid: genUniqueStr(), dueTimeStamp: todoTimestamp, kadaiTitle: todoContent}];
+                let kadai = {lectureID: todoLecID, kadaiList: kadaiList};
+                _kadaiMemo.push(kadai);
+            }
+            kadaiMemo = _kadaiMemo;
         } else {
             let kadaiList = [{kid: genUniqueStr(), dueTimeStamp: todoTimestamp, kadaiTitle: todoContent}];
-            let kadaiMemo = [{lectureID: todoLecID, kadaiList: kadaiList}];
-            ll = kadaiMemo;
+            kadaiMemo = [{lectureID: todoLecID, kadaiList: kadaiList}];
+
         }
-        addMemo(ll);
-        // Save
-        let entity = {};
-        entity.kadaiMemo = ll;
-        console.log(ll);
-        chrome.storage.local.set(entity, function () {
-            console.log('stored kadaiMemo');
+        getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
+            let kadaiMemoListAll= parseKadaiMemo(kadaiMemo,kadaiMemoTodo);
+
+            addMemo(kadaiMemo,kadaiMemoListAll);
+
+            // Save
+            let entity = {};
+            entity.kadaiMemo = kadaiMemo;
+            console.log(kadaiMemo);
+            chrome.storage.local.set(entity, function () {
+                console.log('stored kadaiMemo');
+            });
+            entity = {};
+            entity.kadaiMemoTodo = kadaiMemoListAll;
+            chrome.storage.local.set(entity, function () {
+                console.log('stored kadaiMemoTodo');
+            });
         });
 
     });
 
 }
-
 
 
 function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
@@ -481,9 +500,12 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         console.log("error");
     }
     getFromStorage('kadaiMemo').then(function (kadaiMemo) {
-        if(kadaiMemo!==undefined){
-            addMemo(kadaiMemo);
-        }
+        getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
+            if (kadaiMemo !== undefined) {
+                if(kadaiMemoTodo===undefined)kadaiMemoTodo=[];
+                addMemo(kadaiMemo,kadaiMemoTodo);
+            }
+        });
 
     });
 }
@@ -621,6 +643,22 @@ function updateKadaiTodo(event) {
         }
         saveKadaiTodo(kadaiTodo);
         // console.log("update kadaitodo", event.target.id);
+
+    });
+}
+function updateKadaiMemoTodo(event) {
+    // console.log(event.target.kid);
+    getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
+        if (typeof kadaiMemoTodo !== 'undefined') {
+            const q = kadaiMemoTodo.findIndex((kadai) => {
+                return (kadai.kid === event.target.id);
+            });
+            if (q !== -1) {
+                kadaiMemoTodo[q].isFinished = 1 - kadaiMemoTodo[q].isFinished;
+            }
+        }
+        saveKadaiMemoTodo(kadaiMemoTodo);
+        console.log("update kadaiMemotodo", event.target.id);
 
     });
 }
@@ -913,6 +951,15 @@ function saveKadaiTodo(kadaiListAll) {
     let entity = {};
 
     entity.kadaiTodo = kadaiListAll;
+    chrome.storage.local.set(entity, function () {
+        // console.log('stored hasNew');
+    });
+}
+
+function saveKadaiMemoTodo(kadaiMemoListAll) {
+    let entity = {};
+
+    entity.kadaiMemoTodo = kadaiMemoListAll;
     chrome.storage.local.set(entity, function () {
         // console.log('stored hasNew');
     });
