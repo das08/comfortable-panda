@@ -88,7 +88,7 @@ function sortKadai(parsedKadai) {
 }
 
 function genUniqueStr() {
-    return new Date().getTime().toString(16) + Math.floor(123456 * Math.random()).toString(16);
+    return "m"+new Date().getTime().toString(16) + Math.floor(123456 * Math.random()).toString(16);
 }
 
 function getTimeRemain(_remainTime) {
@@ -174,7 +174,22 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
                     // if (kadaiTodoDiv !== null) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
-                    title.innerHTML = "<span class=\"add-badge add-badge-success\">個人用</span>" + kadaiTitle;
+                    // title.innerHTML = "<span class=\"add-badge add-badge-success\">個人用</span>" + kadaiTitle+"<span class=\"del-button\">×</span>";
+
+                    let memoBadge=document.createElement('span');
+                    memoBadge.classList.add("add-badge");
+                    memoBadge.classList.add("add-badge-success");
+                    memoBadge.innerText="個人用";
+                    let deleteBadge=document.createElement('span');
+                    deleteBadge.className="del-button";
+                    deleteBadge.id=kid;
+                    deleteBadge.addEventListener('click',deleteKadaiMemo,true);
+                    deleteBadge.innerText="×";
+
+                    title.appendChild(memoBadge);
+                    title.append(kadaiTitle);
+                    title.appendChild(deleteBadge);
+
                     const q = kadaiMemoListAll.findIndex((kadai) => {
                         return (kadai.kid === kid);
                     });
@@ -363,11 +378,11 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let todoLecOption = document.createElement('option');
     // todoLecOption.className="todoLecName";
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < lectureIDList.length; i++) {
+        if(lectureIDList[i].lectureName===undefined)continue;
         let c_todoLecOption = todoLecOption.cloneNode(true);
-        c_todoLecOption.value = "" + i;
-        c_todoLecOption.text = "電気電子回路" + i;
-        c_todoLecOption.id = "2020-888-N124-007";
+        c_todoLecOption.text = lectureIDList[i].lectureName;
+        c_todoLecOption.id = lectureIDList[i].lectureID;
         todoLecSelect.appendChild(c_todoLecOption);
     }
     todoLecLabel.appendChild(todoLecSelect);
@@ -384,7 +399,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let todoDueInput = document.createElement('input');
     todoDueInput.type = "datetime-local";
     todoDueInput.className = "todoDue";
-    todoDueInput.value = "2020-06-12T19:30";
+    todoDueInput.value = new Date(`${new Date().toISOString().substr(0,16)}-10:00`).toISOString().substr(0,16);
     todoDueLabel.appendChild(todoDueInput);
 
     let todoSubmitButton = document.createElement('button');
@@ -659,6 +674,34 @@ function updateKadaiMemoTodo(event) {
         }
         saveKadaiMemoTodo(kadaiMemoTodo);
         console.log("update kadaiMemotodo", event.target.id);
+
+    });
+}
+
+function deleteKadaiMemo(event) {
+    getFromStorage('kadaiMemo').then(function (kadaiMemo) {
+        let popIdx=-1;
+        console.log("before",kadaiMemo);
+        for (let i=0;i<kadaiMemo.length;i++){
+            let kadaiList=kadaiMemo[i].kadaiList;
+            for (let item=0;item<kadaiList.length;item++){
+                let kid=kadaiList[item].kid;
+                if (kid===event.target.id){
+                    let delMemoSpan=document.querySelectorAll(`#${event.target.id}`)[1];
+                    console.log(delMemoSpan);
+                    delMemoSpan.innerText="削除済";
+                    kadaiList.splice(item,1);
+                    break;
+                }
+            }
+        }
+        console.log("after",kadaiMemo);
+        let entity = {};
+        entity.kadaiMemo = kadaiMemo;
+        chrome.storage.local.set(entity, function () {
+            console.log("delete kadaiMemotodo", event.target.id);
+        });
+
 
     });
 }
