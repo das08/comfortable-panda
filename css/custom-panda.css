@@ -399,6 +399,20 @@
     background-color: #28a745;
 }
 /*<span class="add-badge add-badge-success">個人用</span>*/
+
+.del-button{
+    color: #c61212;
+    position: relative;
+    float: right;
+    right: 10px;
+    display: inline-block;
+    margin-left: 0.5em;
+    font-size: 16px;
+    font-weight: 600;
+    vertical-align: middle;
+    border-radius: 1rem;
+    cursor: pointer;
+}
 .plus-button {
     margin-left: 45px;
     margin-bottom: 2px;
@@ -418,3 +432,4 @@
 }
 
 /*<button class="plus-button" style="">+</button>*/
+
