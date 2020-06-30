@@ -105,6 +105,8 @@ function toggleKadaiTab() {
     kadaiTab.style.display = '';
     let examTab = document.querySelector('.exam-tab');
     examTab.style.display = 'none';
+    let addMemoButton = document.querySelector('.plus-button');
+    addMemoButton.style.display = '';
 }
 
 function toggleExamTab() {
@@ -112,7 +114,16 @@ function toggleExamTab() {
     kadaiTab.style.display = 'none';
     let examTab = document.querySelector('.exam-tab');
     examTab.style.display = '';
+    let addMemoButton = document.querySelector('.plus-button');
+    addMemoButton.style.display = 'none';
     loadExamfromStorage();
+}
+
+function toggleMemoBox() {
+    let addMemoBox=document.querySelector('.addMemoBox');
+    let toggleStatus=addMemoBox.style.display;
+    if(toggleStatus==='') addMemoBox.style.display='none';
+    else addMemoBox.style.display='';
 }
 
 function addMemo(kadaiMemo,kadaiMemoListAll) {
@@ -352,6 +363,10 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let examTabLabel = document.createElement('label');
     examTabLabel.htmlFor = 'examTab';
     examTabLabel.innerText = 'テスト・クイズ一覧';
+    let addMemoButton=document.createElement('button');
+    addMemoButton.className="plus-button";
+    addMemoButton.innerText="+";
+    addMemoButton.addEventListener('click', toggleMemoBox,true);
 
     let kadaiDiv = document.createElement('div');
     kadaiDiv.className = "kadai-tab";
@@ -364,10 +379,13 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     main_div.appendChild(kadaiTabLabel);
     main_div.appendChild(examTab);
     main_div.appendChild(examTabLabel);
+    main_div.appendChild(addMemoButton);
 
     // add edit box
-    let examBox = document.createElement('div');
-    examBox.className = "examBox";
+    let memoEditBox = document.createElement('div');
+    memoEditBox.classList.add("examBox");
+    memoEditBox.classList.add("addMemoBox");
+    memoEditBox.style.display="none";
     let todo_label = document.createElement('label');
     todo_label.style.display = "block";
 
@@ -408,12 +426,12 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     todoSubmitButton.innerText = "追加";
     todoSubmitButton.addEventListener('click', todoAdd, true);
 
-    examBox.appendChild(todoLecLabel);
-    examBox.appendChild(todoContentLabel);
-    examBox.appendChild(todoDueLabel);
-    examBox.appendChild(todoSubmitButton);
+    memoEditBox.appendChild(todoLecLabel);
+    memoEditBox.appendChild(todoContentLabel);
+    memoEditBox.appendChild(todoDueLabel);
+    memoEditBox.appendChild(todoSubmitButton);
 
-    kadaiDiv.appendChild(examBox);
+    kadaiDiv.appendChild(memoEditBox);
     // add edit box
 
 
