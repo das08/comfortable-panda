@@ -246,7 +246,6 @@ function parseKadaiMemo(kadaiMemo,_kadaiMemoListAll) {
                 return (item.kid === kadaiMemoID);
             });
             if(q!==-1){
-                // console.log(_kadaiMemoListAll[q]);
                 isFinished=_kadaiMemoListAll[q].isFinished;
             }
             kadaiMemoListAll.push({kid:kadaiMemoID,dueDate:kadaiMemoDue,isFinished:isFinished,lectureID:lectureID,title:kadaiMemoTitle});
@@ -261,7 +260,7 @@ function todoAdd(event) {
     let todoContent = document.querySelector(".todoContent").value;
     let todoDue = document.querySelector(".todoDue").value;
     let todoTimestamp = new Date(`${todoDue}`).getTime();
-    // console.log(todoLecID, todoContent, todoDue);
+
     getFromStorage('kadaiMemo').then(function (_kadaiMemo) {
         let kadaiMemo;
         if (typeof _kadaiMemo !== 'undefined' && _kadaiMemo.length > 0) {
@@ -269,7 +268,6 @@ function todoAdd(event) {
                 return (item.lectureID === todoLecID);
             });
             if (q !== -1) {
-                // console.log(kadaiMemo[q].kadaiList);
                 _kadaiMemo[q].kadaiList.push({
                     kid: genUniqueStr(),
                     dueTimeStamp: todoTimestamp,
@@ -294,14 +292,13 @@ function todoAdd(event) {
             // Save
             let entity = {};
             entity.kadaiMemo = kadaiMemo;
-            console.log(kadaiMemo);
             chrome.storage.local.set(entity, function () {
-                console.log('stored kadaiMemo');
+                // console.log('stored kadaiMemo');
             });
             entity = {};
             entity.kadaiMemoTodo = kadaiMemoListAll;
             chrome.storage.local.set(entity, function () {
-                console.log('stored kadaiMemoTodo');
+                // console.log('stored kadaiMemoTodo');
             });
         });
 
@@ -506,8 +503,6 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
             }
             if (cnt > 0) {
                 C_list_container.appendChild(C_list_body);
-                // C_header.appendChild(C_header_title);
-
                 item_cnt++;
             }
             C_header.appendChild(C_header_title);
@@ -516,8 +511,6 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
 
 
         if (item_cnt > 0) {
-            // kadaiDiv.appendChild(C_header);
-            // kadaiDiv.appendChild(C_list_container);
             C_header.style.display = "";
             C_list_container.style.display = "";
             main_div.appendChild(kadaiDiv);
@@ -640,7 +633,6 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
                     C_list_body.appendChild(date);
                     C_list_body.appendChild(remain_time);
                     C_list_body.appendChild(title);
-                    // console.log(C_list_body);
                     cnt++;
                 }
             }
@@ -664,7 +656,6 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
 
 
 function updateKadaiTodo(event) {
-    // console.log(event.target.kid);
     getFromStorage('kadaiTodo').then(function (kadaiTodo) {
         if (typeof kadaiTodo !== 'undefined') {
             const q = kadaiTodo.findIndex((kadai) => {
@@ -680,7 +671,6 @@ function updateKadaiTodo(event) {
     });
 }
 function updateKadaiMemoTodo(event) {
-    // console.log(event.target.kid);
     getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
         if (typeof kadaiMemoTodo !== 'undefined') {
             const q = kadaiMemoTodo.findIndex((kadai) => {
@@ -691,33 +681,27 @@ function updateKadaiMemoTodo(event) {
             }
         }
         saveKadaiMemoTodo(kadaiMemoTodo);
-        console.log("update kadaiMemotodo", event.target.id);
-
     });
 }
 
 function deleteKadaiMemo(event) {
     getFromStorage('kadaiMemo').then(function (kadaiMemo) {
-        let popIdx=-1;
-        console.log("before",kadaiMemo);
         for (let i=0;i<kadaiMemo.length;i++){
             let kadaiList=kadaiMemo[i].kadaiList;
             for (let item=0;item<kadaiList.length;item++){
                 let kid=kadaiList[item].kid;
                 if (kid===event.target.id){
                     let delMemoSpan=document.querySelectorAll(`#${event.target.id}`)[1];
-                    console.log(delMemoSpan);
                     delMemoSpan.innerText="削除済";
                     kadaiList.splice(item,1);
                     break;
                 }
             }
         }
-        console.log("after",kadaiMemo);
         let entity = {};
         entity.kadaiMemo = kadaiMemo;
         chrome.storage.local.set(entity, function () {
-            console.log("delete kadaiMemotodo", event.target.id);
+            // console.log("delete kadaiMemotodo", event.target.id);
         });
 
 
@@ -725,20 +709,16 @@ function deleteKadaiMemo(event) {
 }
 
 function updateExamTodo(event) {
-    // console.log(event.target.kid);
     getFromStorage('examTodo').then(function (examTodo) {
         if (typeof examTodo !== 'undefined') {
             const q = examTodo.findIndex((exam) => {
                 return (exam.eid === parseInt(event.target.id));
             });
-            // console.log("find",q,event.target.id);
             if (q !== -1) {
                 examTodo[q].isFinished = 1 - examTodo[q].isFinished;
             }
         }
         saveExamTodo(examTodo);
-        // console.log("update examtodo", event.target.id);
-
     });
 }
 
@@ -923,9 +903,6 @@ function getKadaiTodo(parsedKadai) {
             }
         }
         saveKadaiTodo(kadaiListAll);
-        // console.log("kadaiListAll", kadaiListAll);
-        console.log("parsed kadai", parsedKadai);
-        // test
         insertSideNav(parsedKadai, kadaiListAll, getTabList());
         insertJS();
     });
@@ -940,13 +917,10 @@ function getExamTodo(examListAll, parsedExam) {
                     return (exam.eid === eid);
                 });
                 if (q !== -1) {
-                    // console.log(eid,examTodo[q]);
                     if (examTodo[q].isFinished === 1) examListAll[i].isFinished = 1;
                 }
             }
         }
-        // console.log("all",examListAll);
-        // console.log("pe",parsedExam);
         saveExamTodo(examListAll, parsedExam);
         insertSideNavExam(parsedExam, examListAll, getTabList(), new Date().getTime());
     });
@@ -973,7 +947,6 @@ function getFromStorage(key) {
 
 function updateVisited(lectureID) {
     getFromStorage('hasNewItem').then(function (hasNewItem) {
-        // console.log('fetch hasNewitem', hasNewItem);
         if (hasNewItem === undefined) return 0;
         const q = hasNewItem.findIndex((kadai) => {
             return (kadai.lectureID === lectureID);
@@ -982,7 +955,6 @@ function updateVisited(lectureID) {
             hasNewItem[q].isUpdate = 0;
             saveHasNew(hasNewItem);
         }
-
     });
 }
 
@@ -1137,19 +1109,6 @@ function compare(parsedKadai, storedKadai) {
     return upToDateKadaiList;
 }
 
-function isPandAOK() {
-    //TODO: 動かす　今は全部true
-    let pandaStatus = true;
-    getFromStorage('lastModified').then(function (lastModified) {
-
-        if (typeof lastModified !== 'undefined' && (new Date().getTime() - lastModified) / 1000 <= 30) {
-            pandaStatus = false;
-        }
-        // console.log('last', lastModified, (new Date().getTime() - lastModified) / 1000, pandaStatus);
-    });
-    return pandaStatus;
-}
-
 function getSiteID() {
     var url = location.href;
     let lectureID = '';
@@ -1162,7 +1121,6 @@ function getSiteID() {
 
 function update() {
     if (getSiteID() && getSiteID().length === 17) {
-        // console.log('visited', getSiteID());
         updateVisited(getSiteID());
     }
 }
@@ -1192,10 +1150,8 @@ function display() {
                     if (typeof hasNewItem === 'undefined') {
                         hasNewItem = [];
                     }
-                    // console.log('fetch stored hasNewItem', hasNewItem);
 
                     let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
-                    // console.log('notificationList', notificationList);
 
                     saveHasNew(notificationList);
                     saveKadai(parsedKadai);
@@ -1209,15 +1165,7 @@ function display() {
 }
 
 function main() {
-    if (isPandAOK()) {
-        // console.log("you can hurry panda!");
-        display();
-    } else {
-        // console.log("dont hurry panda!");
-        getFromStorage('hasNewItem').then(function (hasNewItem) {
-            addNotificationBadge(getTabList(), hasNewItem);
-        });
-    }
+    display();
     update();
 }
 
@@ -1290,7 +1238,6 @@ function loadExamfromPanda() {
             console.log("error fetching quiz from panda", value);
         });
 }
-
 
 insertCSS();
 main();
