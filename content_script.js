@@ -1,28 +1,27 @@
-//----------- miniPandA setting --------------//
-let header_list = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
-let header_color = ["danger", "warning", "success", "other"];
-let initLetter = ["a", "b", "c", "d"];
+//----------- Begin miniPandA declaration --------------//
+const header_name = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
+const header_color = ["danger", "warning", "success", "other"];
+const initLetter = ["a", "b", "c", "d"];
 
-var header = document.createElement('div');
-var header_title = document.createElement('span');
+let header = document.createElement('div');
+let header_title = document.createElement('span');
 header_title.className = "q";
-var list_container = document.createElement('div');
+let list_container = document.createElement('div');
 list_container.className = "sidenav-list";
-var list_body = document.createElement('div');
-var h2 = document.createElement('h2');
+let list_body = document.createElement('div');
+let h2 = document.createElement('h2');
 
-var p_chkbox = document.createElement('input');
+let p_chkbox = document.createElement('input');
 p_chkbox.type = "checkbox";
 p_chkbox.className = "todo-check";
-var p_label = document.createElement('label');
-var p_date = document.createElement('p');
+let p_label = document.createElement('label');
+let p_date = document.createElement('p');
 p_date.className = "kadai-date";
-var remain = document.createElement('span');
+let remain = document.createElement('span');
 remain.className = "time-remain";
-var p_title = document.createElement('p');
+let p_title = document.createElement('p');
 p_title.className = "kadai-title";
-
-//----------- miniPandA setting --------------//
+//----------- End miniPandA declaration --------------//
 function insertCSS() {
     let css = document.createElement('link');
     css.rel = "stylesheet";
@@ -71,7 +70,6 @@ function parseID(lectureIDList) {
 }
 
 function sortKadai(parsedKadai) {
-    // console.log("s", parsedKadai.length);
     for (let i = 0; i < parsedKadai.length; i++) {
         let kadaiList = parsedKadai[i].kadaiList;
         kadaiList.sort(function (a, b) {
@@ -95,9 +93,7 @@ function getTimeRemain(_remainTime) {
     let day = Math.floor(_remainTime / (3600 * 24));
     let hours = Math.floor((_remainTime - (day * 3600 * 24)) / 3600);
     let minutes = Math.floor((_remainTime - (day * 3600 * 24 + hours * 3600)) / 60);
-
     return [day, hours, minutes]
-
 }
 
 function toggleKadaiTab() {
@@ -144,7 +140,7 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
                 let kid = kadaiMemoList[memo].kid;
                 let kadaiTitle = kadaiMemoList[memo].kadaiTitle;
 
-                let daysUntilDue = diffDays(new Date().getTime(), dueTime);
+                let daysUntilDue = getDaysUntil(new Date().getTime(), dueTime);
                 if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && daysUntilDue <= 1000 && i === 3)) {
                     let kadaiTodoDiv = document.querySelector(`#${initLetter[i]}${lectureID}`);
 
@@ -440,7 +436,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         var C_header_title = header_title.cloneNode(true);
         C_header.className = `sidenav-${header_color[i]}`;
         C_header.style.display = "none";
-        C_header_title.textContent = `${header_list[i]}`;
+        C_header_title.textContent = `${header_name[i]}`;
         // header end //
 
         // list begin //
@@ -478,7 +474,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
                 let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
                 let timeRemain = getTimeRemain((dueTime - new Date().getTime()) / 1000);
 
-                let daysUntilDue = diffDays(new Date().getTime(), dueTime);
+                let daysUntilDue = getDaysUntil(new Date().getTime(), dueTime);
                 if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && i === 3)) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
@@ -573,7 +569,7 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
         var C_header = header.cloneNode(true);
         var C_header_title = header_title.cloneNode(true);
         C_header.className = `sidenav-${header_color[i]}`;
-        C_header_title.textContent = `${header_list[i]}`;
+        C_header_title.textContent = `${header_name[i]}`;
         // header end //
 
         // list begin //
@@ -613,7 +609,7 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
                 let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
                 let timeRemain = getTimeRemain((dueTime - new Date().getTime()) / 1000);
 
-                let daysUntilDue = diffDays(new Date().getTime(), dueTime);
+                let daysUntilDue = getDaysUntil(new Date().getTime(), dueTime);
                 if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && i === 3)) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
@@ -728,13 +724,11 @@ const otherSiteTab = document.querySelectorAll('#otherSiteList > li');
 const otherSiteTabCount = Object.keys(otherSiteTab).length;
 
 
-function diffDays(dt1, dt2) {
-
+function getDaysUntil(dt1, dt2) {
     let diff = (dt2 - dt1) / 1000;
     diff /= 3600 * 24;
     if (diff < 0) diff = 9999;
     return (diff);
-
 }
 
 
@@ -754,7 +748,7 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
                     if (upToDateKadaiList[q].isUpdate === 1) {
                         defaultTab[j].classList.add('badge');
                     }
-                    let daysUntilDue = diffDays(new Date().getTime(), upToDateKadaiList[q].closestTime);
+                    let daysUntilDue = getDaysUntil(new Date().getTime(), upToDateKadaiList[q].closestTime);
                     if (daysUntilDue <= 1) {
                         defaultTab[j].classList.add('nav-danger');
                     } else if (daysUntilDue <= 5) {
@@ -776,7 +770,7 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
                     if (upToDateKadaiList[q].isUpdate === 1) {
                         otherSiteTab[j].classList.add('badge');
                     }
-                    let daysUntilDue = diffDays(new Date().getTime(), upToDateKadaiList[q].closestTime);
+                    let daysUntilDue = getDaysUntil(new Date().getTime(), upToDateKadaiList[q].closestTime);
                     if (daysUntilDue <= 1) {
                         otherSiteTab[j].classList.add('nav-danger');
                     } else if (daysUntilDue <= 5) {
@@ -875,7 +869,7 @@ function parseKadai(data, types) {
 }
 
 function extractKadai(parsedKadai) {
-    let kadaiListAll = []
+    let kadaiListAll = [];
     for (let i = 0; i < parsedKadai.length; i++) {
         let kadaiList = parsedKadai[i].kadaiList;
         for (let kadai = 0; kadai < kadaiList.length; kadai++) {
