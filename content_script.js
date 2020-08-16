@@ -30,7 +30,6 @@ let header_title = createElem("span", {className: "q"});
 let list_container = createElem("div", {className: "sidenav-list"});
 let list_body = createElem("div");
 let h2 = createElem("h2");
-
 let p_chkbox = createElem("input", {type: "checkbox", className: "todo-check"});
 let p_label = createElem("label");
 let p_date = createElem("p", {className: "kadai-date"});
@@ -71,7 +70,6 @@ function insertJS() {
     } catch (e) {
         console.log("error");
     }
-
 }
 
 function parseID(lectureIDList) {
@@ -80,7 +78,6 @@ function parseID(lectureIDList) {
         let id = lectureIDList[i].lectureID;
         idList[id] = lectureIDList[i].lectureName;
     }
-    // console.log(idList);
     return idList;
 }
 
@@ -239,7 +236,6 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
             }
         }
     }
-
 }
 
 function parseKadaiMemo(kadaiMemo,_kadaiMemoListAll) {
@@ -310,9 +306,7 @@ function todoAdd(event) {
             chrome.storage.local.set(entity, function () {
             });
         });
-
     });
-
 }
 
 
@@ -714,8 +708,6 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
             }
         }
     }
-
-
 }
 
 function getTabList() {
@@ -847,7 +839,6 @@ function getExamTodo(examListAll, parsedExam) {
     });
 }
 
-
 function getKadaiFromPandA() {
     return $.ajax({
         // url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
@@ -857,7 +848,6 @@ function getKadaiFromPandA() {
         cache: false,
     });
 }
-
 
 function getFromStorage(key) {
     return new Promise(function (resolve, reject) {
@@ -936,7 +926,6 @@ function saveExamTodo(examListAll, parsedExam) {
     });
 }
 
-
 function createNotificationList(upToDateKadaiList, hasNewItem) {
     let notificationList = [];
 
@@ -970,7 +959,6 @@ function createNotificationList(upToDateKadaiList, hasNewItem) {
                     //TODO: farthestTime が nowTimeより古ければisUpdate=0
                     tmp.isUpdate = hasNew;
                 }
-
             }
         } else {
             // 差分あり
@@ -984,9 +972,7 @@ function createNotificationList(upToDateKadaiList, hasNewItem) {
         }
         notificationList.push(tmp);
     }
-
     return notificationList;
-
 }
 
 function compareKadai(parsedKadai, storedKadai) {
@@ -1037,7 +1023,7 @@ function getSiteID() {
     return lectureID;
 }
 
-function update() {
+function updateFlags() {
     if (getSiteID() && getSiteID().length === 17) {
         updateVisited(getSiteID());
     }
@@ -1076,11 +1062,6 @@ function display() {
             }
         });
     });
-}
-
-function main() {
-    display();
-    update();
 }
 
 function loadExamfromStorage() {
@@ -1151,6 +1132,11 @@ function loadExamfromPanda() {
         });
 }
 
-insertCSS();
+function main() {
+    insertCSS();
+    display();
+    updateFlags();
+}
+
 main();
 
