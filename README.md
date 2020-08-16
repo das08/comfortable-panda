@@ -30,7 +30,7 @@ If you open lecture page with notification badge on, the badge will disappear.
 
 ## Side-menu
 Click ☰ to open side-menu.
-All available kadai will be displayed inside the side-menu.
+All available assignment will be displayed inside the side-menu.
 
 
 # Update Log
@@ -43,6 +43,8 @@ All available kadai will be displayed inside the side-menu.
 - 2020/06/13 v1.2.0 Added check button.
 - 2020/06/23 v1.3.0 Added quiz/exam tab.
 - 2020/06/24 v1.3.1 Fixed bug.
+- 2020/06/30 v1.4.0 Add custom todo.
+- 2020/08/16 v1.4.1 Removed redundant lines.
 
 # License
 MIT

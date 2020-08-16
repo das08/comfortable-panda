@@ -27,8 +27,7 @@
         "css/custom-panda.css"
       ],
       "matches": [
-        "https://panda.ecs.kyoto-u.ac.jp/*",
-        "https://das82.com/*"
+        "https://panda.ecs.kyoto-u.ac.jp/*"
       ]
     }
   ],
