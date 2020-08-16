@@ -1,4 +1,8 @@
 //----------- Begin miniPandA declaration --------------//
+const defaultTab = document.querySelectorAll('.nav-menu');
+const defaultTabCount = Object.keys(defaultTab).length;
+const otherSiteTab = document.querySelectorAll('#otherSiteList > li');
+const otherSiteTabCount = Object.keys(otherSiteTab).length;
 const header_name = ["締め切り２４時間以内", "締め切り５日以内", "締め切り１４日以内", "その他"];
 const header_color = ["danger", "warning", "success", "other"];
 const initLetter = ["a", "b", "c", "d"];
@@ -662,10 +666,9 @@ function updateKadaiTodo(event) {
             }
         }
         saveKadaiTodo(kadaiTodo);
-        // console.log("update kadaitodo", event.target.id);
-
     });
 }
+
 function updateKadaiMemoTodo(event) {
     getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
         if (typeof kadaiMemoTodo !== 'undefined') {
@@ -699,8 +702,6 @@ function deleteKadaiMemo(event) {
         chrome.storage.local.set(entity, function () {
             // console.log("delete kadaiMemotodo", event.target.id);
         });
-
-
     });
 }
 
@@ -717,12 +718,6 @@ function updateExamTodo(event) {
         saveExamTodo(examTodo);
     });
 }
-
-const defaultTab = document.querySelectorAll('.nav-menu');
-const defaultTabCount = Object.keys(defaultTab).length;
-const otherSiteTab = document.querySelectorAll('#otherSiteList > li');
-const otherSiteTabCount = Object.keys(otherSiteTab).length;
-
 
 function getDaysUntil(dt1, dt2) {
     let diff = (dt2 - dt1) / 1000;
@@ -791,7 +786,6 @@ function getTabList() {
 
     for (let i = 2; i < defaultTabCount; i++) {
         let tmpTab = {};
-
         let lectureID = defaultTab[i].getElementsByTagName('a')[0].getAttribute('href').slice(-17);
         let lectureID2 = defaultTab[i].getElementsByTagName('span')[1].getAttribute('data');
         let lectureName = defaultTab[i].getElementsByTagName('a')[0].getAttribute('title').split("]")[1];
@@ -799,9 +793,7 @@ function getTabList() {
         tmpTab.type = 'default';
         tmpTab.lectureID = lectureID2;
         tmpTab.lectureName = lectureName;
-
         lectureIDList.push(tmpTab);
-
     }
     for (let i = 0; i < otherSiteTabCount; i++) {
         let tmpTab = {};
@@ -811,13 +803,10 @@ function getTabList() {
         tmpTab.type = 'otherSite';
         tmpTab.lectureID = lectureID;
         tmpTab.lectureName = lectureName;
-
         lectureIDList.push(tmpTab);
-
     }
 
     return lectureIDList;
-
 }
 
 function parseKadai(data, types) {
@@ -1063,7 +1052,7 @@ function createNotificationList(upToDateKadaiList, hasNewItem) {
 
 }
 
-function compare(parsedKadai, storedKadai) {
+function compareKadai(parsedKadai, storedKadai) {
     let upToDateKadaiList = [];
 
     // 最新の課題を基準に1つずつ見ていく
@@ -1078,16 +1067,14 @@ function compare(parsedKadai, storedKadai) {
             return (store.lectureID === lectureID);
         });
         // 過去に保存されていない科目は無条件でisUpdated フラグ
+        tmp.lectureID = lectureID;
+        tmp.isUpdate = 1;
+        tmp.closestTime = closestTime;
+        tmp.farthestTime = farthestTime;
         if (q === -1) {
-            tmp.lectureID = lectureID;
             tmp.isUpdate = 1;
-            tmp.closestTime = closestTime;
-            tmp.farthestTime = farthestTime;
         } else {
-            tmp.lectureID = lectureID;
             tmp.isUpdate = 0;
-            tmp.closestTime = closestTime;
-            tmp.farthestTime = farthestTime;
             // 任意の最新課題について過去に保存されているか見る
             for (let j = 0; j < kadaiList.length; j++) {
                 let kid = kadaiList[j].kid;
@@ -1104,9 +1091,9 @@ function compare(parsedKadai, storedKadai) {
 }
 
 function getSiteID() {
-    var url = location.href;
+    let url = location.href;
     let lectureID = '';
-    var reg = new RegExp("https://panda.ecs.kyoto-u.ac.jp/portal.*?/(.*?)(?=/)");
+    let reg = new RegExp("https://panda.ecs.kyoto-u.ac.jp/portal.*?/(.*?)(?=/)");
     if (url.match(reg) && url.match(reg)[1] === 'site') {
         lectureID = url.slice(44, 61);
     }
@@ -1136,7 +1123,7 @@ function display() {
             } else {
                 // 3. else compare latest and saved kadai list ->make uptodate list
                 let upToDateKadaiList;
-                upToDateKadaiList = compare(parsedKadai, storedKadai);
+                upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
 
                 // 4. Get visited history
                 getFromStorage('hasNewItem').then(function (hasNewItem) {
