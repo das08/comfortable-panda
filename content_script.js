@@ -7,6 +7,8 @@ const header_name = ["締め切り２４時間以内", "締め切り５日以内
 const header_color = ["danger", "warning", "success", "other"];
 const initLetter = ["a", "b", "c", "d"];
 
+// const nowTime = new Date().getTime();
+const nowTime = 1590937200000;
 
 let header = document.createElement('div');
 let header_title = document.createElement('span');
@@ -145,7 +147,7 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
                 let kid = kadaiMemoList[memo].kid;
                 let kadaiTitle = kadaiMemoList[memo].kadaiTitle;
 
-                let daysUntilDue = getDaysUntil(new Date().getTime(), dueTime);
+                let daysUntilDue = getDaysUntil(nowTime, dueTime);
                 if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && daysUntilDue <= 1000 && i === 3)) {
                     let kadaiTodoDiv = document.querySelector(`#${initLetter[i]}${lectureID}`);
 
@@ -157,7 +159,7 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
 
                     let _date = new Date(dueTime);
                     let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
-                    let timeRemain = getTimeRemain((dueTime - new Date().getTime()) / 1000);
+                    let timeRemain = getTimeRemain((dueTime - nowTime) / 1000);
 
                     if (kadaiTodoDiv === null) {
                         let C_list_body = list_body.cloneNode(true);
@@ -477,9 +479,9 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
                 let kid = kadaiList[id].kid;
                 let kadaiTitle = kadaiList[id].kadaiTitle;
                 let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
-                let timeRemain = getTimeRemain((dueTime - new Date().getTime()) / 1000);
+                let timeRemain = getTimeRemain((dueTime - nowTime) / 1000);
 
-                let daysUntilDue = getDaysUntil(new Date().getTime(), dueTime);
+                let daysUntilDue = getDaysUntil(nowTime, dueTime);
                 if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && i === 3)) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
@@ -612,9 +614,9 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
                 let eid = examList[id].eid;
                 let kadaiTitle = examList[id].title;
                 let dispDue = _date.toLocaleDateString() + " " + _date.getHours() + ":" + ('00' + _date.getMinutes()).slice(-2);
-                let timeRemain = getTimeRemain((dueTime - new Date().getTime()) / 1000);
+                let timeRemain = getTimeRemain((dueTime - nowTime) / 1000);
 
-                let daysUntilDue = getDaysUntil(new Date().getTime(), dueTime);
+                let daysUntilDue = getDaysUntil(nowTime, dueTime);
                 if ((daysUntilDue <= 1 && i === 0) || (daysUntilDue > 1 && daysUntilDue <= 5 && i === 1) || (daysUntilDue > 5 && daysUntilDue <= 14 && i === 2) || (daysUntilDue > 14 && i === 3)) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
@@ -721,8 +723,8 @@ function updateExamTodo(event) {
 }
 
 function getDaysUntil(dt1, dt2) {
-    let diff = (dt2 - 1590937200) / 1000;
-    // let diff = (dt2 - dt1) / 1000;
+    // let diff = (dt2 - 1590937200) / 1000;
+    let diff = (dt2 - dt1) / 1000;
     diff /= 3600 * 24;
     if (diff < 0) diff = 9999;
     return (diff);
@@ -745,7 +747,7 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
                     if (upToDateKadaiList[q].isUpdate === 1) {
                         defaultTab[j].classList.add('badge');
                     }
-                    let daysUntilDue = getDaysUntil(new Date().getTime(), upToDateKadaiList[q].closestTime);
+                    let daysUntilDue = getDaysUntil(nowTime, upToDateKadaiList[q].closestTime);
                     if (daysUntilDue <= 1) {
                         defaultTab[j].classList.add('nav-danger');
                     } else if (daysUntilDue <= 5) {
@@ -767,7 +769,7 @@ function addNotificationBadge(lectureIDList, upToDateKadaiList) {
                     if (upToDateKadaiList[q].isUpdate === 1) {
                         otherSiteTab[j].classList.add('badge');
                     }
-                    let daysUntilDue = getDaysUntil(new Date().getTime(), upToDateKadaiList[q].closestTime);
+                    let daysUntilDue = getDaysUntil(nowTime, upToDateKadaiList[q].closestTime);
                     if (daysUntilDue <= 1) {
                         otherSiteTab[j].classList.add('nav-danger');
                     } else if (daysUntilDue <= 5) {
@@ -823,7 +825,7 @@ function parseKadai(data, types) {
         let due = item[i].dueTime.time;
         let isFinished = 0;
         // add only available kadai
-        if (due <= new Date().getTime()) {
+        if (due <= nowTime) {
             continue;
         }
         let kadaiDict = {kid: kid, dueTimeStamp: due, kadaiTitle: title};
@@ -908,7 +910,7 @@ function getExamTodo(examListAll, parsedExam) {
             }
         }
         saveExamTodo(examListAll, parsedExam);
-        insertSideNavExam(parsedExam, examListAll, getTabList(), new Date().getTime());
+        insertSideNavExam(parsedExam, examListAll, getTabList(), nowTime);
     });
 }
 
@@ -946,22 +948,20 @@ function updateVisited(lectureID) {
 }
 
 function saveKadai(parsedKadai) {
-    var date = new Date();
     let entity = {};
 
     entity.kadai = parsedKadai;
-    entity.lastModified = date.getTime();
+    entity.lastModified = nowTime;
     chrome.storage.local.set(entity, function () {
         // console.log('stored kadai');
     });
 }
 
 function saveHasNew(noticationList) {
-    var date = new Date();
     let entity = {};
 
     entity.hasNewItem = noticationList;
-    entity.lastModified = date.getTime();
+    entity.lastModified = nowTime;
     chrome.storage.local.set(entity, function () {
         // console.log('stored hasNew');
     });
