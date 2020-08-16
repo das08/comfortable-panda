@@ -10,30 +10,37 @@ const initLetter = ["a", "b", "c", "d"];
 // const nowTime = new Date().getTime();
 const nowTime = 1590937200000;
 
-let header = document.createElement('div');
-let header_title = document.createElement('span');
-header_title.className = "q";
-let list_container = document.createElement('div');
-list_container.className = "sidenav-list";
-let list_body = document.createElement('div');
-let h2 = document.createElement('h2');
+function createElem(tag, dict) {
+    let elem = document.createElement(tag);
+    for (let key in dict) {
+        elem[key] = dict[key];
+    }
+    return elem
+}
 
-let p_chkbox = document.createElement('input');
-p_chkbox.type = "checkbox";
-p_chkbox.className = "todo-check";
-let p_label = document.createElement('label');
-let p_date = document.createElement('p');
-p_date.className = "kadai-date";
-let remain = document.createElement('span');
-remain.className = "time-remain";
-let p_title = document.createElement('p');
-p_title.className = "kadai-title";
+function appendChildAll(to, array) {
+    for (let obj in array) {
+        to.appendChild(array[obj]);
+    }
+    return to
+}
+
+let header = createElem("div");
+let header_title = createElem("span", {className: "q"});
+let list_container = createElem("div", {className: "sidenav-list"});
+let list_body = createElem("div");
+let h2 = createElem("h2");
+
+let p_chkbox = createElem("input", {type: "checkbox", className: "todo-check"});
+let p_label = createElem("label");
+let p_date = createElem("p", {className: "kadai-date"});
+let remain = createElem("span", {className: "time-remain"});
+let p_title = createElem("p", {className: "kadai-title"});
+
 //----------- End miniPandA declaration --------------//
 
 function insertCSS() {
-    let css = document.createElement('link');
-    css.rel = "stylesheet";
-    css.type = "text/css";
+    let css = createElem("link", {rel: "stylesheet", type: "text/css"});
     css.href = chrome.extension.getURL('css/custom-panda.css');
     document.body.appendChild(css);
 }
@@ -87,7 +94,6 @@ function sortKadai(parsedKadai) {
             if (a.kadaiTitle > b.kadaiTitle) return 1;
             return 0;
         });
-        // console.log(i, kadaiList);
         parsedKadai[i].kadaiList = kadaiList;
     }
     return parsedKadai;
@@ -98,7 +104,6 @@ function genUniqueStr() {
 }
 
 function getDaysUntil(dt1, dt2) {
-    // let diff = (dt2 - 1590937200) / 1000;
     let diff = (dt2 - dt1) / 1000;
     diff /= 3600 * 24;
     if (diff < 0) diff = 9999;
@@ -194,7 +199,6 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
 
                     }
 
-                    // if (kadaiTodoDiv !== null) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
                     // title.innerHTML = "<span class=\"add-badge add-badge-success\">個人用</span>" + kadaiTitle+"<span class=\"del-button\">×</span>";
@@ -230,12 +234,7 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
                     date.classList.add("todoMemo");
                     remain_time.classList.add("todoMemo");
                     title.classList.add("todoMemo");
-                    kadaiTodoDiv.appendChild(chkbox);
-                    kadaiTodoDiv.appendChild(label);
-                    kadaiTodoDiv.appendChild(date);
-                    kadaiTodoDiv.appendChild(remain_time);
-                    kadaiTodoDiv.appendChild(title);
-                    // }
+                    appendChildAll(kadaiTodoDiv, [chkbox, label, date, remain_time, title]);
                 }
             }
         }
@@ -305,12 +304,10 @@ function todoAdd(event) {
             let entity = {};
             entity.kadaiMemo = kadaiMemo;
             chrome.storage.local.set(entity, function () {
-                // console.log('stored kadaiMemo');
             });
             entity = {};
             entity.kadaiMemoTodo = kadaiMemoListAll;
             chrome.storage.local.set(entity, function () {
-                // console.log('stored kadaiMemoTodo');
             });
         });
 
@@ -318,20 +315,6 @@ function todoAdd(event) {
 
 }
 
-function createElem(tag,dict){
-    let elem=document.createElement(tag);
-    for (let key in dict){
-        elem[key]=dict[key];
-    }
-    return elem
-}
-
-function appendChildAll(to, array) {
-    for (let obj in array){
-        to.appendChild(array[obj]);
-    }
-    return to
-}
 
 function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let idList = parseID(lectureIDList);
@@ -339,7 +322,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
 
     // add hamburger
     let topbar = document.getElementById("mastHead");
-    let hamburger=createElem("span", {id:"hamburger",textContent:"☰"});
+    let hamburger = createElem("span", {id: "hamburger", textContent: "☰"});
     try {
         topbar.appendChild(hamburger);
     } catch (e) {
@@ -348,49 +331,47 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
 
     var parent = document.getElementById('container');
     var ref = document.getElementById('toolMenuWrap');
-    let main_div = createElem("div", {id:"mySidenav"});
+    let main_div = createElem("div", {id: "mySidenav"});
     main_div.classList.add("sidenav");
     main_div.classList.add("cp_tab");
 
     var img = chrome.extension.getURL("img/logo.png");
-    let logo = createElem("img", {className:"logo",alt:"logo",src:img});
+    let logo = createElem("img", {className: "logo", alt: "logo", src: img});
 
-    var a = createElem("a", {href:"#",id:"close_btn",textContent:"×"});
+    var a = createElem("a", {href: "#", id: "close_btn", textContent: "×"});
     a.classList.add("closebtn");
     a.classList.add("q");
 
 
-    let kadaiTab = createElem("input", {type:"radio",id:"kadaiTab",name:"cp_tab",checked:true});
+    let kadaiTab = createElem("input", {type: "radio", id: "kadaiTab", name: "cp_tab", checked: true});
     kadaiTab.addEventListener('click', toggleKadaiTab);
-    let kadaiTabLabel = createElem("label", {htmlFor:"kadaiTab",innerText:"課題一覧"});
-    let examTab = createElem("input", {type:"radio",id:"examTab",name:"cp_tab",checked:false});
+    let kadaiTabLabel = createElem("label", {htmlFor: "kadaiTab", innerText: "課題一覧"});
+    let examTab = createElem("input", {type: "radio", id: "examTab", name: "cp_tab", checked: false});
     examTab.addEventListener('click', toggleExamTab);
-    let examTabLabel = createElem("label", {htmlFor:"examTab",innerText:"テスト・クイズ一覧"});
-    let addMemoButton=createElem("button", {className:"plus-button",innerText:"+"});
-    addMemoButton.addEventListener('click', toggleMemoBox,true);
+    let examTabLabel = createElem("label", {htmlFor: "examTab", innerText: "テスト・クイズ一覧"});
+    let addMemoButton = createElem("button", {className: "plus-button", innerText: "+"});
+    addMemoButton.addEventListener('click', toggleMemoBox, true);
 
-    let kadaiDiv =createElem("div", {className:"kadai-tab"});
-    let examDiv = createElem("div", {className:"exam-tab"});
+    let kadaiDiv = createElem("div", {className: "kadai-tab"});
+    let examDiv = createElem("div", {className: "exam-tab"});
 
-    appendChildAll(main_div,[logo,a,kadaiTab,kadaiTabLabel,examTab,examTabLabel,addMemoButton]);
+    appendChildAll(main_div, [logo, a, kadaiTab, kadaiTabLabel, examTab, examTabLabel, addMemoButton]);
 
     // add edit box
-    let memoEditBox = document.createElement('div');
+    let memoEditBox = createElem("div");
     memoEditBox.classList.add("examBox");
     memoEditBox.classList.add("addMemoBox");
-    memoEditBox.style.display="none";
-    let todo_label = document.createElement('label');
+    memoEditBox.style.display = "none";
+    let todo_label = createElem("label");
     todo_label.style.display = "block";
 
     let todoLecLabel = todo_label.cloneNode(true);
     todoLecLabel.innerText = "講義名";
-    let todoLecSelect = document.createElement('select');
-    todoLecSelect.className = "todoLecName";
-    let todoLecOption = document.createElement('option');
-    // todoLecOption.className="todoLecName";
+    let todoLecSelect = createElem("select", {className: "todoLecName"});
+    let todoLecOption = createElem("option");
 
     for (let i = 0; i < lectureIDList.length; i++) {
-        if(lectureIDList[i].lectureName===undefined)continue;
+        if (lectureIDList[i].lectureName === undefined) continue;
         let c_todoLecOption = todoLecOption.cloneNode(true);
         c_todoLecOption.text = lectureIDList[i].lectureName;
         c_todoLecOption.id = lectureIDList[i].lectureID;
@@ -400,21 +381,19 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
 
     let todoContentLabel = todo_label.cloneNode(true);
     todoContentLabel.innerText = "メモ";
-    let todoContentInput = createElem("input", {type:"text",className:"todoContent"});
+    let todoContentInput = createElem("input", {type: "text", className: "todoContent"});
     todoContentLabel.appendChild(todoContentInput);
 
     let todoDueLabel = todo_label.cloneNode(true);
     todoDueLabel.innerText = "期限";
-    let todoDueInput = document.createElement('input');
-    todoDueInput.type = "datetime-local";
-    todoDueInput.className = "todoDue";
-    todoDueInput.value = new Date(`${new Date().toISOString().substr(0,16)}-10:00`).toISOString().substr(0,16);
+    let todoDueInput = createElem("input", {type: "datetime-local", className: "todoDue"});
+    todoDueInput.value = new Date(`${new Date().toISOString().substr(0, 16)}-10:00`).toISOString().substr(0, 16);
     todoDueLabel.appendChild(todoDueInput);
 
-    let todoSubmitButton = createElem("button", {type:"submit",id:"todo-add",innerText:"追加"});
+    let todoSubmitButton = createElem("button", {type: "submit", id: "todo-add", innerText: "追加"});
     todoSubmitButton.addEventListener('click', todoAdd, true);
 
-    appendChildAll(memoEditBox,[todoLecLabel,todoContentLabel,todoDueLabel,todoSubmitButton]);
+    appendChildAll(memoEditBox, [todoLecLabel, todoContentLabel, todoDueLabel, todoSubmitButton]);
 
     kadaiDiv.appendChild(memoEditBox);
     // add edit box
@@ -481,7 +460,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
                     chkbox.lectureID = lectureID;
                     chkbox.addEventListener('change', updateKadaiTodo, false);
                     label.htmlFor = kid;
-                    appendChildAll(C_list_body,[chkbox,label,date,remain_time,title]);
+                    appendChildAll(C_list_body, [chkbox, label, date, remain_time, title]);
                     cnt++;
                 }
             }
@@ -493,13 +472,12 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         }
         // list end //
 
-
         if (item_cnt > 0) {
             C_header.style.display = "";
             C_list_container.style.display = "";
-            appendChildAll(main_div,[kadaiDiv,examDiv]);
+            appendChildAll(main_div, [kadaiDiv, examDiv]);
         }
-        appendChildAll(kadaiDiv,[C_header,C_list_container]);
+        appendChildAll(kadaiDiv, [C_header, C_list_container]);
 
     }
     try {
@@ -510,11 +488,10 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     getFromStorage('kadaiMemo').then(function (kadaiMemo) {
         getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
             if (kadaiMemo !== undefined) {
-                if(kadaiMemoTodo===undefined)kadaiMemoTodo=[];
-                addMemo(kadaiMemo,kadaiMemoTodo);
+                if (kadaiMemoTodo === undefined) kadaiMemoTodo = [];
+                addMemo(kadaiMemo, kadaiMemoTodo);
             }
         });
-
     });
 }
 
@@ -524,23 +501,20 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
     let examDiv = document.querySelector('.exam-tab');
     examDiv.innerHTML = '';
 
-    let examBox = createElem("div", {className:"examBox"});
+    let examBox = createElem("div", {className: "examBox"});
 
-    let loadButton = createElem("button", {innerText:"テスト・クイズ情報を取得する",className:"btn-square"});
+    let loadButton = createElem("button", {innerText: "テスト・クイズ情報を取得する", className: "btn-square"});
     loadButton.addEventListener("click", loadExamfromPanda, false);
 
     let dateTime = new Date(lastExamGetTime);
-    let lastLoad = document.createElement('p');
-    lastLoad.className = "lastLoad";
+    let lastLoad = createElem("p", {className: "lastLoad"});
     lastLoad.innerText = "最終更新：　" + dateTime.toLocaleDateString() + " " + dateTime.getHours() + ":" + ('00' + dateTime.getMinutes()).slice(-2) + ":" + ('00' + dateTime.getSeconds()).slice(-2);
     if (lastExamGetTime === undefined) lastLoad.innerText = "最終更新：未取得";
 
-    let info1 = document.createElement('p');
-    info1.innerText = "※PandAに若干の負荷がかかるため、必要時以外取得ボタンを押さないようお願いします。"
-    let info2 = document.createElement('p');
-    info2.innerText = "※各コースサイトの「テスト・クイズ」に関連付けられてないものについては取得できません。取得されたテスト・クイズ一覧は参考程度にご覧ください。"
+    let info1 = createElem("p", {innerText: "※PandAに若干の負荷がかかるため、必要時以外取得ボタンを押さないようお願いします。"});
+    let info2 = createElem("p", {innerText: "※各コースサイトの「テスト・クイズ」に関連付けられてないものについては取得できません。取得されたテスト・クイズ一覧は参考程度にご覧ください。"});
 
-    appendChildAll(examBox,[lastLoad,loadButton,info1,info2]);
+    appendChildAll(examBox, [lastLoad, loadButton, info1, info2]);
 
     // generate exam todo list
     for (let i = 0; i < 4; i++) {
@@ -604,11 +578,8 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
                     chkbox.lectureID = lectureID;
                     chkbox.addEventListener('change', updateExamTodo, false);
                     label.htmlFor = eid;
-                    C_list_body.appendChild(chkbox);
-                    C_list_body.appendChild(label);
-                    C_list_body.appendChild(date);
-                    C_list_body.appendChild(remain_time);
-                    C_list_body.appendChild(title);
+
+                    appendChildAll(C_list_body, [chkbox, label, date, remain_time, title]);
                     cnt++;
                 }
             }
@@ -623,10 +594,8 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
         examDiv.appendChild(examBox);
 
         if (item_cnt > 0) {
-            examDiv.appendChild(C_header);
-            examDiv.appendChild(C_list_container);
+            appendChildAll(examDiv, [C_header, C_list_container]);
         }
-
     }
 }
 
@@ -1080,9 +1049,7 @@ function display() {
         let parsedKadai = parseKadai(result);
         console.log(parsedKadai);
         if (parsedKadai.length === 0) return;
-        // // test
-        // insertSideNav(parseKadai(result,'mini'), getTabList());
-        // insertJS();
+
         getKadaiTodo(parsedKadai);
         // 2. Get old kadai from storage
         getFromStorage('kadai').then(function (storedKadai) {
@@ -1100,14 +1067,11 @@ function display() {
                     if (typeof hasNewItem === 'undefined') {
                         hasNewItem = [];
                     }
-
                     let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
 
                     saveHasNew(notificationList);
                     saveKadai(parsedKadai);
-
                     addNotificationBadge(getTabList(), notificationList);
-
                 });
             }
         });
@@ -1141,7 +1105,6 @@ function loadExamfromPanda() {
     let examListAll = [];
     let parsedExam = [];
 
-    // console.log(lecID);
 
     async function get(url) {
         return fetch(`https://panda.ecs.kyoto-u.ac.jp/direct/sam_pub/context/${url}.json`).then((response) => {
@@ -1156,7 +1119,6 @@ function loadExamfromPanda() {
     Promise.all(promiseResult)
         .then((exam) => {
             const lectureCount = exam.length;
-
 
             for (let i = 0; i < lectureCount; i++) {
                 const examInfo = exam[i].sam_pub_collection;
@@ -1191,5 +1153,4 @@ function loadExamfromPanda() {
 
 insertCSS();
 main();
-
 
