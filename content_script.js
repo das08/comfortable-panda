@@ -7,6 +7,7 @@ const header_name = ["締め切り２４時間以内", "締め切り５日以内
 const header_color = ["danger", "warning", "success", "other"];
 const initLetter = ["a", "b", "c", "d"];
 
+
 let header = document.createElement('div');
 let header_title = document.createElement('span');
 header_title.className = "q";
@@ -720,7 +721,8 @@ function updateExamTodo(event) {
 }
 
 function getDaysUntil(dt1, dt2) {
-    let diff = (dt2 - dt1) / 1000;
+    let diff = (dt2 - 1590937200) / 1000;
+    // let diff = (dt2 - dt1) / 1000;
     diff /= 3600 * 24;
     if (diff < 0) diff = 9999;
     return (diff);
@@ -812,6 +814,7 @@ function getTabList() {
 function parseKadai(data, types) {
     let parsedKadai = [];
     let item = data.assignment_collection;
+    console.log(data.assignment_collection);
     for (let i = 0; i < item.length; i++) {
         let temp = {};
         let lecID = item[i].context;
@@ -912,7 +915,8 @@ function getExamTodo(examListAll, parsedExam) {
 
 function getKadaiFromPandA() {
     return $.ajax({
-        url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
+        // url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
+        url: "https://das82.com/my.json",
         dataType: "json",
         type: "get",
         cache: false,
@@ -1110,6 +1114,7 @@ function display() {
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
+        console.log(parsedKadai);
         if (parsedKadai.length === 0) return;
         // // test
         // insertSideNav(parseKadai(result,'mini'), getTabList());
