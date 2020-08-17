@@ -97,7 +97,7 @@ function sortKadai(parsedKadai) {
 }
 
 function genUniqueStr() {
-    return "m"+new Date().getTime().toString(16) + Math.floor(123456 * Math.random()).toString(16);
+    return "m" + new Date().getTime().toString(16) + Math.floor(123456 * Math.random()).toString(16);
 }
 
 function getDaysUntil(dt1, dt2) {
@@ -135,13 +135,13 @@ function toggleExamTab() {
 }
 
 function toggleMemoBox() {
-    let addMemoBox=document.querySelector('.addMemoBox');
-    let toggleStatus=addMemoBox.style.display;
-    if(toggleStatus==='') addMemoBox.style.display='none';
-    else addMemoBox.style.display='';
+    let addMemoBox = document.querySelector('.addMemoBox');
+    let toggleStatus = addMemoBox.style.display;
+    if (toggleStatus === '') addMemoBox.style.display = 'none';
+    else addMemoBox.style.display = '';
 }
 
-function addMemo(kadaiMemo,kadaiMemoListAll) {
+function addMemo(kadaiMemo, kadaiMemoListAll) {
     let idList = parseID(getTabList());
     //Delete old
     let oldMemo = document.querySelectorAll('.todoMemo');
@@ -200,15 +200,15 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
 
-                    let memoBadge=document.createElement('span');
+                    let memoBadge = document.createElement('span');
                     memoBadge.classList.add("add-badge");
                     memoBadge.classList.add("add-badge-success");
-                    memoBadge.innerText="メモ";
-                    let deleteBadge=document.createElement('span');
-                    deleteBadge.className="del-button";
-                    deleteBadge.id=kid;
-                    deleteBadge.addEventListener('click',deleteKadaiMemo,true);
-                    deleteBadge.innerText="×";
+                    memoBadge.innerText = "メモ";
+                    let deleteBadge = document.createElement('span');
+                    deleteBadge.className = "del-button";
+                    deleteBadge.id = kid;
+                    deleteBadge.addEventListener('click', deleteKadaiMemo, true);
+                    deleteBadge.innerText = "×";
 
                     title.appendChild(memoBadge);
                     title.append(kadaiTitle);
@@ -233,31 +233,37 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
                     title.classList.add("todoMemo");
                     appendChildAll(kadaiTodoDiv, [chkbox, label, date, remain_time, title]);
                     //hide relaxpanda
-                    let relaxPanda=document.querySelector(".relaxpanda").innerHTML="";
+                    let relaxPanda = document.querySelector(".relaxpanda").innerHTML = "";
                 }
             }
         }
     }
 }
 
-function parseKadaiMemo(kadaiMemo,_kadaiMemoListAll) {
-    if(_kadaiMemoListAll===undefined)_kadaiMemoListAll=[];
-    let kadaiMemoListAll=[];
-    for (let item=0;item<kadaiMemo.length;item++){
-        let kadaiMemoList=kadaiMemo[item].kadaiList;
-        let lectureID=kadaiMemo[item].lectureID;
-        for (let kadai=0;kadai<kadaiMemoList.length;kadai++){
-            let kadaiMemoID=kadaiMemoList[kadai].kid;
-            let kadaiMemoTitle=kadaiMemoList[kadai].kadaiTitle;
-            let kadaiMemoDue=kadaiMemoList[kadai].dueTimeStamp;
-            let isFinished=0;
+function parseKadaiMemo(kadaiMemo, _kadaiMemoListAll) {
+    if (_kadaiMemoListAll === undefined) _kadaiMemoListAll = [];
+    let kadaiMemoListAll = [];
+    for (let item = 0; item < kadaiMemo.length; item++) {
+        let kadaiMemoList = kadaiMemo[item].kadaiList;
+        let lectureID = kadaiMemo[item].lectureID;
+        for (let kadai = 0; kadai < kadaiMemoList.length; kadai++) {
+            let kadaiMemoID = kadaiMemoList[kadai].kid;
+            let kadaiMemoTitle = kadaiMemoList[kadai].kadaiTitle;
+            let kadaiMemoDue = kadaiMemoList[kadai].dueTimeStamp;
+            let isFinished = 0;
             const q = _kadaiMemoListAll.findIndex((item) => {
                 return (item.kid === kadaiMemoID);
             });
-            if(q!==-1){
-                isFinished=_kadaiMemoListAll[q].isFinished;
+            if (q !== -1) {
+                isFinished = _kadaiMemoListAll[q].isFinished;
             }
-            kadaiMemoListAll.push({kid:kadaiMemoID,dueDate:kadaiMemoDue,isFinished:isFinished,lectureID:lectureID,title:kadaiMemoTitle});
+            kadaiMemoListAll.push({
+                kid: kadaiMemoID,
+                dueDate: kadaiMemoDue,
+                isFinished: isFinished,
+                lectureID: lectureID,
+                title: kadaiMemoTitle
+            });
         }
     }
     return kadaiMemoListAll;
@@ -294,9 +300,9 @@ function todoAdd(event) {
 
         }
         getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
-            let kadaiMemoListAll= parseKadaiMemo(kadaiMemo,kadaiMemoTodo);
+            let kadaiMemoListAll = parseKadaiMemo(kadaiMemo, kadaiMemoTodo);
 
-            addMemo(kadaiMemo,kadaiMemoListAll);
+            addMemo(kadaiMemo, kadaiMemoListAll);
 
             // Save
             let entity = {};
@@ -478,14 +484,14 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     } catch (e) {
         console.log("error");
     }
-    if(parsedKadai.length===0){
-        let kadaiTab= document.querySelector('.kadai-tab');
+    if (parsedKadai.length === 0) {
+        let kadaiTab = document.querySelector('.kadai-tab');
         // kadaiTab.innerHTML='';
         const img_relaxPanda = chrome.extension.getURL("img/relaxPanda.png");
-        let relaxDiv=createElem("div",{className:"relaxpanda"});
-        let relaxPandaP = createElem("p", {className: "relaxpanda-p",innerText:"現在提出できる課題はありません"});
+        let relaxDiv = createElem("div", {className: "relaxpanda"});
+        let relaxPandaP = createElem("p", {className: "relaxpanda-p", innerText: "現在提出できる課題はありません"});
         let relaxPandaImg = createElem("img", {className: "relaxpanda-img", alt: "logo", src: img_relaxPanda});
-        appendChildAll(relaxDiv,[relaxPandaP,relaxPandaImg]);
+        appendChildAll(relaxDiv, [relaxPandaP, relaxPandaImg]);
         kadaiTab.appendChild(relaxDiv);
     }
     getFromStorage('kadaiMemo').then(function (kadaiMemo) {
@@ -647,14 +653,14 @@ function updateExamTodo(event) {
 
 function deleteKadaiMemo(event) {
     getFromStorage('kadaiMemo').then(function (kadaiMemo) {
-        for (let i=0;i<kadaiMemo.length;i++){
-            let kadaiList=kadaiMemo[i].kadaiList;
-            for (let item=0;item<kadaiList.length;item++){
-                let kid=kadaiList[item].kid;
-                if (kid===event.target.id){
-                    let delMemoSpan=document.querySelectorAll(`#${event.target.id}`)[1];
-                    delMemoSpan.innerText="削除済";
-                    kadaiList.splice(item,1);
+        for (let i = 0; i < kadaiMemo.length; i++) {
+            let kadaiList = kadaiMemo[i].kadaiList;
+            for (let item = 0; item < kadaiList.length; item++) {
+                let kid = kadaiList[item].kid;
+                if (kid === event.target.id) {
+                    let delMemoSpan = document.querySelectorAll(`#${event.target.id}`)[1];
+                    delMemoSpan.innerText = "削除済";
+                    kadaiList.splice(item, 1);
                     break;
                 }
             }
@@ -885,7 +891,6 @@ function saveKadai(parsedKadai) {
     entity.kadai = parsedKadai;
     entity.lastModified = nowTime;
     chrome.storage.local.set(entity, function () {
-        // console.log('stored kadai');
     });
 }
 
@@ -895,7 +900,6 @@ function saveHasNew(noticationList) {
     entity.hasNewItem = noticationList;
     entity.lastModified = nowTime;
     chrome.storage.local.set(entity, function () {
-        // console.log('stored hasNew');
     });
 }
 
@@ -904,7 +908,6 @@ function saveKadaiTodo(kadaiListAll) {
 
     entity.kadaiTodo = kadaiListAll;
     chrome.storage.local.set(entity, function () {
-        // console.log('stored hasNew');
     });
 }
 
@@ -913,7 +916,6 @@ function saveKadaiMemoTodo(kadaiMemoListAll) {
 
     entity.kadaiMemoTodo = kadaiMemoListAll;
     chrome.storage.local.set(entity, function () {
-        // console.log('stored hasNew');
     });
 }
 
@@ -1042,37 +1044,43 @@ function display() {
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
-        console.log(parsedKadai);
-        // if (parsedKadai.length === 0) {
-        //     console.log("here!");
-        //     return;
-        // }
 
         getKadaiTodo(parsedKadai);
-        // 2. Get old kadai from storage
-        getFromStorage('kadai').then(function (storedKadai) {
-            // 3. If there is no kadai in storege -> initialize
-            if (typeof storedKadai === 'undefined') {
-                saveKadai(parsedKadai);
-            } else {
-                // 3. else compare latest and saved kadai list ->make uptodate list
-                let upToDateKadaiList;
-                upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
-
-                // 4. Get visited history
-                getFromStorage('hasNewItem').then(function (hasNewItem) {
-
-                    if (typeof hasNewItem === 'undefined') {
-                        hasNewItem = [];
-                    }
-                    let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
-
-                    saveHasNew(notificationList);
-                    saveKadai(parsedKadai);
-                    addNotificationBadge(getTabList(), notificationList);
-                });
+        setTimeout(() => {
+            const d1 = new Date();
+            while (true) {
+                const d2 = new Date();
+                if (d2 - d1 > 10000) {
+                    break;
+                }
             }
-        });
+            // 2. Get old kadai from storage
+            getFromStorage('kadai').then(function (storedKadai) {
+                // 3. If there is no kadai in storege -> initialize
+                if (typeof storedKadai === 'undefined') {
+                    saveKadai(parsedKadai);
+                } else {
+                    // 3. else compare latest and saved kadai list ->make uptodate list
+                    let upToDateKadaiList;
+                    upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
+
+                    // 4. Get visited history
+                    getFromStorage('hasNewItem').then(function (hasNewItem) {
+
+                        if (typeof hasNewItem === 'undefined') {
+                            hasNewItem = [];
+                        }
+                        let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
+
+                        saveHasNew(notificationList);
+                        saveKadai(parsedKadai);
+                        addNotificationBadge(getTabList(), notificationList);
+                    });
+                }
+            });
+        }, 50);
+
+
     });
 }
 
@@ -1098,7 +1106,6 @@ function loadExamfromPanda() {
     let examListAll = [];
     let parsedExam = [];
 
-
     async function get(url) {
         return fetch(`https://panda.ecs.kyoto-u.ac.jp/direct/sam_pub/context/${url}.json`).then((response) => {
             return response.json()
@@ -1112,7 +1119,6 @@ function loadExamfromPanda() {
     Promise.all(promiseResult)
         .then((exam) => {
             const lectureCount = exam.length;
-
             for (let i = 0; i < lectureCount; i++) {
                 const examInfo = exam[i].sam_pub_collection;
                 let examCount = examInfo.length;
@@ -1134,10 +1140,8 @@ function loadExamfromPanda() {
                     examTemp.examList = examList;
                     parsedExam.push(examTemp);
                 }
-
             }
             getExamTodo(examListAll, parsedExam);
-
         })
         .catch((value) => {
             console.log("error fetching quiz from panda", value);
@@ -1148,7 +1152,7 @@ function main() {
     insertCSS();
     display();
     updateFlags();
+
 }
 
 main();
-
