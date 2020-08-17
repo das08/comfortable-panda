@@ -383,7 +383,7 @@ function createSideNav() {
 
     let todoDueLabel = todo_label.cloneNode(true);
     todoDueLabel.innerText = "期限";
-    let todoDueInput = createElem("input", {type: "datetime-local", className: "todoDue"});
+    let todoDueInput = createElem("input", {type: "date", className: "todoDue"});
     todoDueInput.value = new Date(`${new Date().toISOString().substr(0, 16)}-10:00`).toISOString().substr(0, 16);
     todoDueLabel.appendChild(todoDueInput);
 

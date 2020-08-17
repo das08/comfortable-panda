@@ -31,12 +31,6 @@
       ]
     }
   ],
-  "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
-  },
   "permissions": [
     "storage"
   ],
@@ -44,5 +38,10 @@
     "css/custom-panda.css",
     "img/logo.png",
     "img/relaxPanda.png"
-  ]
+  ],
+  "applications": {
+    "gecko": {
+      "id": "comfortable.panda@das08"
+    }
+  }
 }
