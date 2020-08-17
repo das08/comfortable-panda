@@ -10,6 +10,8 @@ const initLetter = ["a", "b", "c", "d"];
 const nowTime = new Date().getTime();
 // const nowTime = 1590937200000;
 
+const tabList=getTabList();
+
 function createElem(tag, dict) {
     let elem = document.createElement(tag);
     for (let key in dict) {
@@ -36,6 +38,11 @@ let p_date = createElem("p", {className: "kadai-date"});
 let remain = createElem("span", {className: "time-remain"});
 let p_title = createElem("p", {className: "kadai-title"});
 
+let main_div = createElem("div", {id: "mySidenav"});
+let kadaiDiv = createElem("div", {className: "kadai-tab"});
+let examDiv = createElem("div", {className: "exam-tab"});
+let parent = document.getElementById('container');
+let ref = document.getElementById('toolMenuWrap');
 //----------- End miniPandA declaration --------------//
 
 function insertCSS() {
@@ -142,7 +149,7 @@ function toggleMemoBox() {
 }
 
 function addMemo(kadaiMemo, kadaiMemoListAll) {
-    let idList = parseID(getTabList());
+    let idList = parseID(tabList);
     //Delete old
     let oldMemo = document.querySelectorAll('.todoMemo');
     oldMemo.forEach((item) => {
@@ -317,23 +324,37 @@ function todoAdd(event) {
     });
 }
 
+let toggle = false;
+function toggleSideNav() {
+    if (toggle) {
+        // document.getElementById("mySidenav").style.width = "0";
+        main_div.style.width="0";
+        document.getElementById("cover").remove();
+    } else {
+        // document.getElementById("mySidenav").style.width = "300px";
+        main_div.style.width="300px";
+        let cover = document.createElement("div");
+        cover.id="cover";
+        document.getElementsByTagName("body")[0].appendChild(cover);
+        cover.onclick = toggleSideNav;
+    }
+    toggle = 1 - toggle;
+}
 
-function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
-    let idList = parseID(lectureIDList);
-    parsedKadai = sortKadai(parsedKadai);
-
+let hamburger = createElem("div", {className: "loader"});
+function createSideNav(){
+    let lectureIDList=tabList;
     // add hamburger
     let topbar = document.getElementById("mastHead");
-    let hamburger = createElem("span", {id: "hamburger", textContent: "☰"});
+    // let hamburger = createElem("div", {id: "hamburger", textContent: "☰"});
+    // let hamburger = createElem("div", {className: "loader"});
+    hamburger.addEventListener('click', toggleSideNav);
     try {
         topbar.appendChild(hamburger);
     } catch (e) {
         console.log("could not append miniPandA.")
     }
 
-    let parent = document.getElementById('container');
-    let ref = document.getElementById('toolMenuWrap');
-    let main_div = createElem("div", {id: "mySidenav"});
     main_div.classList.add("sidenav");
     main_div.classList.add("cp_tab");
 
@@ -343,6 +364,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let a = createElem("a", {href: "#", id: "close_btn", textContent: "×"});
     a.classList.add("closebtn");
     a.classList.add("q");
+    a.addEventListener('click', toggleSideNav);
 
     let kadaiTab = createElem("input", {type: "radio", id: "kadaiTab", name: "cp_tab", checked: true});
     kadaiTab.addEventListener('click', toggleKadaiTab);
@@ -353,8 +375,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let addMemoButton = createElem("button", {className: "plus-button", innerText: "+"});
     addMemoButton.addEventListener('click', toggleMemoBox, true);
 
-    let kadaiDiv = createElem("div", {className: "kadai-tab"});
-    let examDiv = createElem("div", {className: "exam-tab"});
+
 
     appendChildAll(main_div, [logo, a, kadaiTab, kadaiTabLabel, examTab, examTabLabel, addMemoButton]);
 
@@ -397,6 +418,22 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     appendChildAll(memoEditBox, [todoLecLabel, todoContentLabel, todoDueLabel, todoSubmitButton]);
     kadaiDiv.appendChild(memoEditBox);
     // add edit box
+
+    try {
+        parent.insertBefore(main_div, ref);
+    } catch (e) {
+        console.log("error");
+    }
+}
+
+function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
+    let idList = parseID(lectureIDList);
+    parsedKadai = sortKadai(parsedKadai);
+
+    // let main_div=document.querySelector("#mySideNav");
+    // let kadaiDiv=document.querySelector(".kadai-tab");
+    // let examDiv=document.querySelector(".exam-tab");
+
 
     // generate kadai todo list
     for (let i = 0; i < 4; i++) {
@@ -479,11 +516,11 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         appendChildAll(main_div, [kadaiDiv, examDiv]);
         appendChildAll(kadaiDiv, [C_header, C_list_container]);
     }
-    try {
-        parent.insertBefore(main_div, ref);
-    } catch (e) {
-        console.log("error");
-    }
+    // try {
+    //     parent.insertBefore(main_div, ref);
+    // } catch (e) {
+    //     console.log("error");
+    // }
     if (parsedKadai.length === 0) {
         let kadaiTab = document.querySelector('.kadai-tab');
         // kadaiTab.innerHTML='';
@@ -831,8 +868,8 @@ function getKadaiTodo(parsedKadai) {
             }
         }
         saveKadaiTodo(kadaiListAll);
-        insertSideNav(parsedKadai, kadaiListAll, getTabList());
-        insertJS();
+        insertSideNav(parsedKadai, kadaiListAll, tabList);
+        // insertJS();
     });
 }
 
@@ -850,7 +887,7 @@ function getExamTodo(examListAll, parsedExam) {
             }
         }
         saveExamTodo(examListAll, parsedExam);
-        insertSideNavExam(parsedExam, examListAll, getTabList(), nowTime);
+        insertSideNavExam(parsedExam, examListAll, tabList, nowTime);
     });
 }
 
@@ -1044,16 +1081,18 @@ function display() {
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
+        createSideNav();
+        // insertJS();
 
-        getKadaiTodo(parsedKadai);
         setTimeout(() => {
-            const d1 = new Date();
-            while (true) {
-                const d2 = new Date();
-                if (d2 - d1 > 10000) {
-                    break;
-                }
-            }
+            // const d1 = new Date();
+            // while (true) {
+            //     const d2 = new Date();
+            //     if (d2 - d1 > 10000) {
+            //         break;
+            //     }
+            // }
+            getKadaiTodo(parsedKadai);
             // 2. Get old kadai from storage
             getFromStorage('kadai').then(function (storedKadai) {
                 // 3. If there is no kadai in storege -> initialize
@@ -1074,10 +1113,11 @@ function display() {
 
                         saveHasNew(notificationList);
                         saveKadai(parsedKadai);
-                        addNotificationBadge(getTabList(), notificationList);
+                        addNotificationBadge(tabList, notificationList);
                     });
                 }
             });
+            miniPandAReady();
         }, 50);
 
 
@@ -1088,14 +1128,14 @@ function loadExamfromStorage() {
     getFromStorage('parsedExam').then(function (parsedExam) {
         getFromStorage('examTodo').then(function (examToDo) {
             getFromStorage('lastExamGetTime').then(function (lastExamGetTime) {
-                insertSideNavExam(parsedExam, examToDo, getTabList(), lastExamGetTime);
+                insertSideNavExam(parsedExam, examToDo, tabList, lastExamGetTime);
             });
         });
     });
 }
 
 function loadExamfromPanda() {
-    let lectureIDList = getTabList();
+    let lectureIDList = tabList;
     let lecID = [];
     for (let i = 0; i < lectureIDList.length; i++) {
         lecID.push(lectureIDList[i].lectureID);
@@ -1148,11 +1188,17 @@ function loadExamfromPanda() {
         });
 }
 
+
+function miniPandAReady() {
+    hamburger.className="";
+    hamburger.id="hamburger";
+    hamburger.textContent="☰";
+}
+
 function main() {
     insertCSS();
     display();
     updateFlags();
-
 }
 
 main();
