@@ -199,12 +199,11 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
 
                     date.textContent = "" + dispDue;
                     remain_time.textContent = `あと${timeRemain[0]}日${timeRemain[1]}時間${timeRemain[2]}分`;
-                    // title.innerHTML = "<span class=\"add-badge add-badge-success\">個人用</span>" + kadaiTitle+"<span class=\"del-button\">×</span>";
 
                     let memoBadge=document.createElement('span');
                     memoBadge.classList.add("add-badge");
                     memoBadge.classList.add("add-badge-success");
-                    memoBadge.innerText="個人用";
+                    memoBadge.innerText="メモ";
                     let deleteBadge=document.createElement('span');
                     deleteBadge.className="del-button";
                     deleteBadge.id=kid;
@@ -233,6 +232,8 @@ function addMemo(kadaiMemo,kadaiMemoListAll) {
                     remain_time.classList.add("todoMemo");
                     title.classList.add("todoMemo");
                     appendChildAll(kadaiTodoDiv, [chkbox, label, date, remain_time, title]);
+                    //hide relaxpanda
+                    let relaxPanda=document.querySelector(".relaxpanda").innerHTML="";
                 }
             }
         }
@@ -321,7 +322,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     try {
         topbar.appendChild(hamburger);
     } catch (e) {
-        console.log("error")
+        console.log("could not append miniPandA.")
     }
 
     let parent = document.getElementById('container');
@@ -336,7 +337,6 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let a = createElem("a", {href: "#", id: "close_btn", textContent: "×"});
     a.classList.add("closebtn");
     a.classList.add("q");
-
 
     let kadaiTab = createElem("input", {type: "radio", id: "kadaiTab", name: "cp_tab", checked: true});
     kadaiTab.addEventListener('click', toggleKadaiTab);
@@ -389,10 +389,8 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     todoSubmitButton.addEventListener('click', todoAdd, true);
 
     appendChildAll(memoEditBox, [todoLecLabel, todoContentLabel, todoDueLabel, todoSubmitButton]);
-
     kadaiDiv.appendChild(memoEditBox);
     // add edit box
-
 
     // generate kadai todo list
     for (let i = 0; i < 4; i++) {
@@ -468,13 +466,12 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         }
         // list end //
 
-        if (item_cnt >= 0) { //TODO! >=0でいいのか？
+        if (item_cnt > 0) { //TODO! >=0でいいのか？
             C_header.style.display = "";
             C_list_container.style.display = "";
-            appendChildAll(main_div, [kadaiDiv, examDiv]);
         }
+        appendChildAll(main_div, [kadaiDiv, examDiv]);
         appendChildAll(kadaiDiv, [C_header, C_list_container]);
-
     }
     try {
         parent.insertBefore(main_div, ref);
@@ -485,9 +482,11 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         let kadaiTab= document.querySelector('.kadai-tab');
         // kadaiTab.innerHTML='';
         const img_relaxPanda = chrome.extension.getURL("img/relaxPanda.png");
+        let relaxDiv=createElem("div",{className:"relaxpanda"});
         let relaxPandaP = createElem("p", {className: "relaxpanda-p",innerText:"現在提出できる課題はありません"});
         let relaxPandaImg = createElem("img", {className: "relaxpanda-img", alt: "logo", src: img_relaxPanda});
-        appendChildAll(kadaiTab,[relaxPandaP,relaxPandaImg]);
+        appendChildAll(relaxDiv,[relaxPandaP,relaxPandaImg]);
+        kadaiTab.appendChild(relaxDiv);
     }
     getFromStorage('kadaiMemo').then(function (kadaiMemo) {
         getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
@@ -602,7 +601,6 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
         }
     }
 }
-
 
 function updateKadaiTodo(event) {
     // TODO: 済　にしてもいいかも
