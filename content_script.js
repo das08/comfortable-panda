@@ -403,6 +403,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         C_header.className = `sidenav-${header_color[i]}`;
         C_header.style.display = "none";
         C_header_title.textContent = `${header_name[i]}`;
+        C_header.appendChild(C_header_title);
         // header end //
 
         // list begin //
@@ -463,7 +464,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
                 C_list_container.appendChild(C_list_body);
                 item_cnt++;
             }
-            C_header.appendChild(C_header_title);
+            // C_header.appendChild(C_header_title);
         }
         // list end //
 
