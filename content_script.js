@@ -10,7 +10,7 @@ const initLetter = ["a", "b", "c", "d"];
 const nowTime = new Date().getTime();
 // const nowTime = 1590937200000;
 
-const tabList=getTabList();
+const tabList = getTabList();
 
 function createElem(tag, dict) {
     let elem = document.createElement(tag);
@@ -43,40 +43,13 @@ let kadaiDiv = createElem("div", {className: "kadai-tab"});
 let examDiv = createElem("div", {className: "exam-tab"});
 let parent = document.getElementById('container');
 let ref = document.getElementById('toolMenuWrap');
+
 //----------- End miniPandA declaration --------------//
 
 function insertCSS() {
     let css = createElem("link", {rel: "stylesheet", type: "text/css"});
     css.href = chrome.extension.getURL('css/custom-panda.css');
     document.body.appendChild(css);
-}
-
-function insertJS() {
-    let js = document.createElement('script');
-    js.textContent = "let btn = document.getElementById('close_btn');\n" +
-        "btn.onclick = toggleNav;\n" +
-        "let ham = document.getElementById('hamburger');\n" +
-        "ham.onclick = toggleNav;\n" +
-        "\n" +
-        "let toggle = false;\n" +
-        "function toggleNav() {\n" +
-        "    if (toggle) {\n" +
-        "        document.getElementById(\"mySidenav\").style.width = \"0\";\n" +
-        "        document.getElementById(\"cover\").remove();\n" +
-        "    } else {\n" +
-        "        document.getElementById(\"mySidenav\").style.width = \"300px\";\n" +
-        "        let cover = document.createElement(\"div\");\n" +
-        "        cover.id=\"cover\";\n" +
-        "        document.getElementsByTagName(\"body\")[0].appendChild(cover);\n" +
-        "        cover.onclick = toggleNav;\n" +
-        "    }\n" +
-        "    toggle = 1 - toggle;\n" +
-        "}";
-    try {
-        document.head.appendChild(js);
-    } catch (e) {
-        console.log("error");
-    }
 }
 
 function parseID(lectureIDList) {
@@ -241,7 +214,7 @@ function addMemo(kadaiMemo, kadaiMemoListAll) {
                     appendChildAll(kadaiTodoDiv, [chkbox, label, date, remain_time, title]);
                     //hide relaxpanda
                     let relaxPanda = document.querySelector(".relaxpanda");
-                    if(relaxPanda)relaxPanda.innerHTML = "";
+                    if (relaxPanda) relaxPanda.innerHTML = "";
                 }
             }
         }
@@ -326,16 +299,17 @@ function todoAdd(event) {
 }
 
 let toggle = false;
+
 function toggleSideNav() {
     if (toggle) {
         // document.getElementById("mySidenav").style.width = "0";
-        main_div.style.width="0";
+        main_div.style.width = "0";
         document.getElementById("cover").remove();
     } else {
         // document.getElementById("mySidenav").style.width = "300px";
-        main_div.style.width="300px";
+        main_div.style.width = "300px";
         let cover = document.createElement("div");
-        cover.id="cover";
+        cover.id = "cover";
         document.getElementsByTagName("body")[0].appendChild(cover);
         cover.onclick = toggleSideNav;
     }
@@ -343,8 +317,9 @@ function toggleSideNav() {
 }
 
 let hamburger = createElem("div", {className: "loader"});
-function createSideNav(){
-    let lectureIDList=tabList;
+
+function createSideNav() {
+    let lectureIDList = tabList;
     // add hamburger
     let topbar = document.getElementById("mastHead");
     // let hamburger = createElem("div", {id: "hamburger", textContent: "☰"});
@@ -375,7 +350,6 @@ function createSideNav(){
     let examTabLabel = createElem("label", {htmlFor: "examTab", innerText: "テスト・クイズ一覧"});
     let addMemoButton = createElem("button", {className: "plus-button", innerText: "+"});
     addMemoButton.addEventListener('click', toggleMemoBox, true);
-
 
 
     appendChildAll(main_div, [logo, a, kadaiTab, kadaiTabLabel, examTab, examTabLabel, addMemoButton]);
@@ -871,7 +845,6 @@ function getKadaiTodo(parsedKadai) {
         }
         saveKadaiTodo(kadaiListAll);
         insertSideNav(parsedKadai, kadaiListAll, tabList);
-        // insertJS();
     });
 }
 
@@ -1079,49 +1052,37 @@ function updateFlags() {
 }
 
 function display() {
+
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
-        createSideNav();
-        // insertJS();
 
-        setTimeout(() => {
-            // const d1 = new Date();
-            // while (true) {
-            //     const d2 = new Date();
-            //     if (d2 - d1 > 10000) {
-            //         break;
-            //     }
-            // }
-            getKadaiTodo(parsedKadai);
-            // 2. Get old kadai from storage
-            getFromStorage('kadai').then(function (storedKadai) {
-                // 3. If there is no kadai in storege -> initialize
-                if (typeof storedKadai === 'undefined') {
+        getKadaiTodo(parsedKadai);
+        // 2. Get old kadai from storage
+        getFromStorage('kadai').then(function (storedKadai) {
+            // 3. If there is no kadai in storege -> initialize
+            if (typeof storedKadai === 'undefined') {
+                saveKadai(parsedKadai);
+            } else {
+                // 3. else compare latest and saved kadai list ->make uptodate list
+                let upToDateKadaiList;
+                upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
+
+                // 4. Get visited history
+                getFromStorage('hasNewItem').then(function (hasNewItem) {
+
+                    if (typeof hasNewItem === 'undefined') {
+                        hasNewItem = [];
+                    }
+                    let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
+
+                    saveHasNew(notificationList);
                     saveKadai(parsedKadai);
-                } else {
-                    // 3. else compare latest and saved kadai list ->make uptodate list
-                    let upToDateKadaiList;
-                    upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
-
-                    // 4. Get visited history
-                    getFromStorage('hasNewItem').then(function (hasNewItem) {
-
-                        if (typeof hasNewItem === 'undefined') {
-                            hasNewItem = [];
-                        }
-                        let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
-
-                        saveHasNew(notificationList);
-                        saveKadai(parsedKadai);
-                        addNotificationBadge(tabList, notificationList);
-                    });
-                }
-            });
-            miniPandAReady();
-        }, 50);
-
-
+                    addNotificationBadge(tabList, notificationList);
+                });
+            }
+        });
+        miniPandAReady();
     });
 }
 
@@ -1191,15 +1152,19 @@ function loadExamfromPanda() {
 
 
 function miniPandAReady() {
-    hamburger.className="";
-    hamburger.id="hamburger";
-    hamburger.textContent="☰";
+    hamburger.className = "";
+    hamburger.id = "hamburger";
+    hamburger.textContent = "☰";
 }
 
 function main() {
     insertCSS();
-    display();
-    updateFlags();
+    createSideNav();
+    //display hamburger first
+    setTimeout(() => {
+        display();
+        updateFlags();
+    }, 50);
 }
 
 main();
