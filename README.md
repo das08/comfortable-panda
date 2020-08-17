@@ -45,6 +45,7 @@ All available assignment will be displayed inside the side-menu.
 - 2020/06/24 v1.3.1 Fixed bug.
 - 2020/06/30 v1.4.0 Add custom todo.
 - 2020/08/16 v1.4.1 Removed redundant lines.
+- 2020/08/17 v1.5.0 Added relax PandA and spinning wheel.
 
 # License
 MIT

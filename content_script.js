@@ -240,7 +240,8 @@ function addMemo(kadaiMemo, kadaiMemoListAll) {
                     title.classList.add("todoMemo");
                     appendChildAll(kadaiTodoDiv, [chkbox, label, date, remain_time, title]);
                     //hide relaxpanda
-                    let relaxPanda = document.querySelector(".relaxpanda").innerHTML = "";
+                    let relaxPanda = document.querySelector(".relaxpanda");
+                    if(relaxPanda)relaxPanda.innerHTML = "";
                 }
             }
         }
@@ -522,7 +523,8 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     //     console.log("error");
     // }
     if (parsedKadai.length === 0) {
-        let kadaiTab = document.querySelector('.kadai-tab');
+        let kadaiTab = kadaiDiv;
+        // let kadaiTab = document.querySelector('.kadai-tab');
         // kadaiTab.innerHTML='';
         const img_relaxPanda = chrome.extension.getURL("img/relaxPanda.png");
         let relaxDiv = createElem("div", {className: "relaxpanda"});
@@ -793,7 +795,7 @@ function getTabList() {
 function parseKadai(data, types) {
     let parsedKadai = [];
     let item = data.assignment_collection;
-    console.log(data.assignment_collection);
+    // console.log(data.assignment_collection);
     for (let i = 0; i < item.length; i++) {
         let temp = {};
         let lecID = item[i].context;
@@ -893,8 +895,7 @@ function getExamTodo(examListAll, parsedExam) {
 
 function getKadaiFromPandA() {
     return $.ajax({
-        // url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
-        url: "https://das82.com/my.json",
+        url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
         dataType: "json",
         type: "get",
         cache: false,
