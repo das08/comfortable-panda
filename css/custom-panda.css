@@ -430,6 +430,18 @@
     font-size: 24px!important;
     border-radius: 50%;
 }
-
+.relaxpanda-img {
+    width: 150px;
+    margin-top: 50px;
+    margin-left: 70px;
+}
+.relaxpanda-p{
+    color: gray;
+    font-family: serif;
+    font-size: 17px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 20px;
+}
 /*<button class="plus-button" style="">+</button>*/
 

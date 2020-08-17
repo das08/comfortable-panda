@@ -27,7 +27,8 @@
         "css/custom-panda.css"
       ],
       "matches": [
-        "https://panda.ecs.kyoto-u.ac.jp/*"
+        "https://panda.ecs.kyoto-u.ac.jp/*",
+        "https://das82.com/*"
       ]
     }
   ],
@@ -42,6 +43,7 @@
   ],
   "web_accessible_resources": [
     "css/custom-panda.css",
-    "img/logo.png"
+    "img/logo.png",
+    "img/relaxPanda.png"
   ]
 }

@@ -7,8 +7,8 @@ const header_name = ["締め切り２４時間以内", "締め切り５日以内
 const header_color = ["danger", "warning", "success", "other"];
 const initLetter = ["a", "b", "c", "d"];
 
-// const nowTime = new Date().getTime();
-const nowTime = 1590937200000;
+const nowTime = new Date().getTime();
+// const nowTime = 1590937200000;
 
 function createElem(tag, dict) {
     let elem = document.createElement(tag);
@@ -130,6 +130,7 @@ function toggleExamTab() {
     examTab.style.display = '';
     let addMemoButton = document.querySelector('.plus-button');
     addMemoButton.style.display = 'none';
+    console.log("examtab pressed");
     loadExamfromStorage();
 }
 
@@ -323,16 +324,16 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         console.log("error")
     }
 
-    var parent = document.getElementById('container');
-    var ref = document.getElementById('toolMenuWrap');
+    let parent = document.getElementById('container');
+    let ref = document.getElementById('toolMenuWrap');
     let main_div = createElem("div", {id: "mySidenav"});
     main_div.classList.add("sidenav");
     main_div.classList.add("cp_tab");
 
-    var img = chrome.extension.getURL("img/logo.png");
+    const img = chrome.extension.getURL("img/logo.png");
     let logo = createElem("img", {className: "logo", alt: "logo", src: img});
 
-    var a = createElem("a", {href: "#", id: "close_btn", textContent: "×"});
+    let a = createElem("a", {href: "#", id: "close_btn", textContent: "×"});
     a.classList.add("closebtn");
     a.classList.add("q");
 
@@ -466,7 +467,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         }
         // list end //
 
-        if (item_cnt > 0) {
+        if (item_cnt >= 0) { //TODO! >=0でいいのか？
             C_header.style.display = "";
             C_list_container.style.display = "";
             appendChildAll(main_div, [kadaiDiv, examDiv]);
@@ -478,6 +479,14 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         parent.insertBefore(main_div, ref);
     } catch (e) {
         console.log("error");
+    }
+    if(parsedKadai.length===0){
+        let kadaiTab= document.querySelector('.kadai-tab');
+        // kadaiTab.innerHTML='';
+        const img_relaxPanda = chrome.extension.getURL("img/relaxPanda.png");
+        let relaxPandaP = createElem("p", {className: "relaxpanda-p",innerText:"現在提出できる課題はありません"});
+        let relaxPandaImg = createElem("img", {className: "relaxpanda-img", alt: "logo", src: img_relaxPanda});
+        appendChildAll(kadaiTab,[relaxPandaP,relaxPandaImg]);
     }
     getFromStorage('kadaiMemo').then(function (kadaiMemo) {
         getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
@@ -595,6 +604,7 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
 
 
 function updateKadaiTodo(event) {
+    // TODO: 済　にしてもいいかも
     getFromStorage('kadaiTodo').then(function (kadaiTodo) {
         if (typeof kadaiTodo !== 'undefined') {
             const q = kadaiTodo.findIndex((kadai) => {
@@ -1034,7 +1044,10 @@ function display() {
     getKadaiFromPandA().done(function (result) {
         let parsedKadai = parseKadai(result);
         console.log(parsedKadai);
-        if (parsedKadai.length === 0) return;
+        // if (parsedKadai.length === 0) {
+        //     console.log("here!");
+        //     return;
+        // }
 
         getKadaiTodo(parsedKadai);
         // 2. Get old kadai from storage
