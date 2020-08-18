@@ -12,20 +12,7 @@ const nowTime = new Date().getTime();
 
 const tabList = getTabList();
 
-function createElem(tag, dict) {
-    let elem = document.createElement(tag);
-    for (let key in dict) {
-        elem[key] = dict[key];
-    }
-    return elem
-}
-
-function appendChildAll(to, array) {
-    for (let obj in array) {
-        to.appendChild(array[obj]);
-    }
-    return to
-}
+let hamburger = createElem("div", {className: "loader"});
 
 let header = createElem("div");
 let header_title = createElem("span", {className: "q"});
@@ -45,6 +32,21 @@ let parent = document.getElementById('container');
 let ref = document.getElementById('toolMenuWrap');
 
 //----------- End miniPandA declaration --------------//
+
+function createElem(tag, dict) {
+    let elem = document.createElement(tag);
+    for (let key in dict) {
+        elem[key] = dict[key];
+    }
+    return elem
+}
+
+function appendChildAll(to, array) {
+    for (let obj in array) {
+        to.appendChild(array[obj]);
+    }
+    return to
+}
 
 function insertCSS() {
     let css = createElem("link", {rel: "stylesheet", type: "text/css"});
@@ -298,37 +300,15 @@ function todoAdd(event) {
     });
 }
 
-let toggle = false;
-
-function toggleSideNav() {
-    if (toggle) {
-        // document.getElementById("mySidenav").style.width = "0";
-        main_div.style.width = "0";
-        document.getElementById("cover").remove();
-    } else {
-        // document.getElementById("mySidenav").style.width = "300px";
-        main_div.style.width = "300px";
-        let cover = document.createElement("div");
-        cover.id = "cover";
-        document.getElementsByTagName("body")[0].appendChild(cover);
-        cover.onclick = toggleSideNav;
-    }
-    toggle = 1 - toggle;
-}
-
-let hamburger = createElem("div", {className: "loader"});
-
 function createSideNav() {
     let lectureIDList = tabList;
     // add hamburger
     let topbar = document.getElementById("mastHead");
-    // let hamburger = createElem("div", {id: "hamburger", textContent: "☰"});
-    // let hamburger = createElem("div", {className: "loader"});
     hamburger.addEventListener('click', toggleSideNav);
     try {
         topbar.appendChild(hamburger);
     } catch (e) {
-        console.log("could not append miniPandA.")
+        console.log("could not launch miniPandA.")
     }
 
     main_div.classList.add("sidenav");
@@ -350,7 +330,6 @@ function createSideNav() {
     let examTabLabel = createElem("label", {htmlFor: "examTab", innerText: "テスト・クイズ一覧"});
     let addMemoButton = createElem("button", {className: "plus-button", innerText: "+"});
     addMemoButton.addEventListener('click', toggleMemoBox, true);
-
 
     appendChildAll(main_div, [logo, a, kadaiTab, kadaiTabLabel, examTab, examTabLabel, addMemoButton]);
 
@@ -397,7 +376,7 @@ function createSideNav() {
     try {
         parent.insertBefore(main_div, ref);
     } catch (e) {
-        console.log("error");
+        console.log("Could not create sidenav.");
     }
 }
 
@@ -405,22 +384,16 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
     let idList = parseID(lectureIDList);
     parsedKadai = sortKadai(parsedKadai);
 
-    // let main_div=document.querySelector("#mySideNav");
-    // let kadaiDiv=document.querySelector(".kadai-tab");
-    // let examDiv=document.querySelector(".exam-tab");
-
-
     // generate kadai todo list
     for (let i = 0; i < 4; i++) {
         let item_cnt = 0;
-        // header begin //
+
         var C_header = header.cloneNode(true);
         var C_header_title = header_title.cloneNode(true);
         C_header.className = `sidenav-${header_color[i]}`;
         C_header.style.display = "none";
         C_header_title.textContent = `${header_name[i]}`;
         C_header.appendChild(C_header_title);
-        // header end //
 
         // list begin //
         var C_list_container = list_container.cloneNode(true);
@@ -480,26 +453,19 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
                 C_list_container.appendChild(C_list_body);
                 item_cnt++;
             }
-            // C_header.appendChild(C_header_title);
         }
         // list end //
 
-        if (item_cnt > 0) { //TODO! >=0でいいのか？
+        if (item_cnt > 0) {
             C_header.style.display = "";
             C_list_container.style.display = "";
         }
         appendChildAll(main_div, [kadaiDiv, examDiv]);
         appendChildAll(kadaiDiv, [C_header, C_list_container]);
     }
-    // try {
-    //     parent.insertBefore(main_div, ref);
-    // } catch (e) {
-    //     console.log("error");
-    // }
+
     if (parsedKadai.length === 0) {
         let kadaiTab = kadaiDiv;
-        // let kadaiTab = document.querySelector('.kadai-tab');
-        // kadaiTab.innerHTML='';
         const img_relaxPanda = chrome.extension.getURL("img/relaxPanda.png");
         let relaxDiv = createElem("div", {className: "relaxpanda"});
         let relaxPandaP = createElem("p", {className: "relaxpanda-p", innerText: "現在提出できる課題はありません"});
@@ -541,12 +507,11 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
     // generate exam todo list
     for (let i = 0; i < 4; i++) {
         let item_cnt = 0;
-        // header begin //
+
         var C_header = header.cloneNode(true);
         var C_header_title = header_title.cloneNode(true);
         C_header.className = `sidenav-${header_color[i]}`;
         C_header_title.textContent = `${header_name[i]}`;
-        // header end //
 
         // list begin //
         var C_list_container = list_container.cloneNode(true);
@@ -614,11 +579,26 @@ function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTi
         // list end //
 
         examDiv.appendChild(examBox);
-
         if (item_cnt > 0) {
             appendChildAll(examDiv, [C_header, C_list_container]);
         }
     }
+}
+
+let toggle = false;
+
+function toggleSideNav() {
+    if (toggle) {
+        main_div.style.width = "0";
+        document.getElementById("cover").remove();
+    } else {
+        main_div.style.width = "300px";
+        let cover = document.createElement("div");
+        cover.id = "cover";
+        document.getElementsByTagName("body")[0].appendChild(cover);
+        cover.onclick = toggleSideNav;
+    }
+    toggle = 1 - toggle;
 }
 
 function updateKadaiTodo(event) {
@@ -681,7 +661,6 @@ function deleteKadaiMemo(event) {
         let entity = {};
         entity.kadaiMemo = kadaiMemo;
         chrome.storage.local.set(entity, function () {
-            // console.log("delete kadaiMemotodo", event.target.id);
         });
     });
 }
@@ -762,7 +741,6 @@ function getTabList() {
         tmpTab.lectureName = lectureName;
         lectureIDList.push(tmpTab);
     }
-
     return lectureIDList;
 }
 
@@ -809,8 +787,6 @@ function parseKadai(data, types) {
             temp.kadaiList.push(kadaiDict);
             parsedKadai[q] = temp;
         }
-
-
     }
     return parsedKadai;
 }
@@ -1149,7 +1125,6 @@ function loadExamfromPanda() {
             console.log("error fetching quiz from panda", value);
         });
 }
-
 
 function miniPandAReady() {
     hamburger.className = "";
