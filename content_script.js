@@ -468,7 +468,7 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         let kadaiTab = kadaiDiv;
         const img_relaxPanda = chrome.extension.getURL("img/relaxPanda.png");
         let relaxDiv = createElem("div", {className: "relaxpanda"});
-        let relaxPandaP = createElem("p", {className: "relaxpanda-p", innerText: "現在提出できる課題はありません"});
+        let relaxPandaP = createElem("p", {className: "relaxpanda-p", innerText: "現在表示できる課題はありません"});
         let relaxPandaImg = createElem("img", {className: "relaxpanda-img", alt: "logo", src: img_relaxPanda});
         appendChildAll(relaxDiv, [relaxPandaP, relaxPandaImg]);
         kadaiTab.appendChild(relaxDiv);
