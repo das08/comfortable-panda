@@ -11,7 +11,7 @@ Chrome extention that makes PandA life comfortable
 # Usage
 1. Login to PandA
 1. Proceed to main page.
-1. Done. Your upper tab color is changed.
+1. Done. Your upper tab color is changed and ☰ icon is displayed.
 
 # Features
 ## Tab coloring
@@ -28,10 +28,15 @@ Tells your unchecked latest assignments.
 
 If you open lecture page with notification badge on, the badge will disappear.
 
-## Side-menu
-Click ☰ to open side-menu.
-All available assignment will be displayed inside the side-menu.
+## miniPandA (Side-menu)
+Click ☰ to open miniPandA.
+All available assignments as well as quizzes will be displayed.
+You can add your custom assignment to miniPandA with PLUS button located on upper right hand side.
 
+Also check box is available for you to distinguish completed assignments from working assignments.
+
+## Screenshot
+![](https://user-images.githubusercontent.com/41512077/90533356-5504e080-e1b3-11ea-8065-bc10ec624ddf.png) 
 
 # Update Log
 - 2020/05/20 v0.9.0 Prototype release
