@@ -41,7 +41,8 @@
   ],
   "applications": {
     "gecko": {
-      "id": "comfortable.panda@das08"
+      "id": "comfortable.panda@das08",
+      "update_url":"https://das82.com/downloads/updates.json"
     }
   }
 }
