@@ -112,7 +112,7 @@ function toggleExamTab() {
     examTab.style.display = '';
     let addMemoButton = document.querySelector('.plus-button');
     addMemoButton.style.display = 'none';
-    console.log("examtab pressed");
+    // console.log("examtab pressed");
     loadExamfromStorage();
 }
 
@@ -819,7 +819,9 @@ function getKadaiTodo(parsedKadai) {
                 }
             }
         }
-        saveKadaiTodo(kadaiListAll);
+        if (parsedKadai.length !== 0){
+            saveKadaiTodo(kadaiListAll);
+        }
         insertSideNav(parsedKadai, kadaiListAll, tabList);
     });
 }
@@ -1031,6 +1033,7 @@ function display() {
 
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
+
         let parsedKadai = parseKadai(result);
 
         getKadaiTodo(parsedKadai);
@@ -1052,12 +1055,15 @@ function display() {
                     }
                     let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
 
-                    saveHasNew(notificationList);
-                    saveKadai(parsedKadai);
+                    if (result.assignment_collection.length !== 0){
+                        saveHasNew(notificationList);
+                        saveKadai(parsedKadai);
+                    }
                     addNotificationBadge(tabList, notificationList);
                 });
             }
         });
+
         miniPandAReady();
     });
 }
