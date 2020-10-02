@@ -1031,33 +1031,35 @@ function display() {
 
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
-        let parsedKadai = parseKadai(result);
+        if (result.assignment_collection.length !== 0){
+            let parsedKadai = parseKadai(result);
 
-        getKadaiTodo(parsedKadai);
-        // 2. Get old kadai from storage
-        getFromStorage('kadai').then(function (storedKadai) {
-            // 3. If there is no kadai in storege -> initialize
-            if (typeof storedKadai === 'undefined') {
-                saveKadai(parsedKadai);
-            } else {
-                // 3. else compare latest and saved kadai list ->make uptodate list
-                let upToDateKadaiList;
-                upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
-
-                // 4. Get visited history
-                getFromStorage('hasNewItem').then(function (hasNewItem) {
-
-                    if (typeof hasNewItem === 'undefined') {
-                        hasNewItem = [];
-                    }
-                    let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
-
-                    saveHasNew(notificationList);
+            getKadaiTodo(parsedKadai);
+            // 2. Get old kadai from storage
+            getFromStorage('kadai').then(function (storedKadai) {
+                // 3. If there is no kadai in storege -> initialize
+                if (typeof storedKadai === 'undefined') {
                     saveKadai(parsedKadai);
-                    addNotificationBadge(tabList, notificationList);
-                });
-            }
-        });
+                } else {
+                    // 3. else compare latest and saved kadai list ->make uptodate list
+                    let upToDateKadaiList;
+                    upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
+
+                    // 4. Get visited history
+                    getFromStorage('hasNewItem').then(function (hasNewItem) {
+
+                        if (typeof hasNewItem === 'undefined') {
+                            hasNewItem = [];
+                        }
+                        let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
+
+                        saveHasNew(notificationList);
+                        saveKadai(parsedKadai);
+                        addNotificationBadge(tabList, notificationList);
+                    });
+                }
+            });
+        }
         miniPandAReady();
     });
 }
