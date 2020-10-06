@@ -44,5 +44,10 @@
     "css/custom-panda.css",
     "img/logo.png",
     "img/relaxPanda.png"
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "comfortable-panda@das08"
+    }
+  }
 }
