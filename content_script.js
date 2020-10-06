@@ -874,11 +874,20 @@ function updateVisited(lectureID) {
     });
 }
 
+function saveLectureID(tablist) {
+    let entity = {};
+
+    entity.lectureInfo = tablist;
+    entity.lastLectureIDGetTime = nowTime;
+    chrome.storage.local.set(entity, function () {
+    });
+}
+
 function saveKadai(parsedKadai) {
     let entity = {};
 
     entity.kadai = parsedKadai;
-    entity.lastModified = nowTime;
+    entity.lastKadaiGetTime = nowTime;
     chrome.storage.local.set(entity, function () {
     });
 }
@@ -887,7 +896,6 @@ function saveHasNew(noticationList) {
     let entity = {};
 
     entity.hasNewItem = noticationList;
-    entity.lastModified = nowTime;
     chrome.storage.local.set(entity, function () {
     });
 }
@@ -921,7 +929,7 @@ function saveExamTodo(examListAll, parsedExam) {
         });
     }
     entity = {};
-    entity.lastExamGetTime = new Date().getTime();
+    entity.lastExamGetTime = nowTime;
     chrome.storage.local.set(entity, function () {
     });
 }
@@ -1149,3 +1157,4 @@ function main() {
 }
 
 main();
+saveLectureID(tabList);
