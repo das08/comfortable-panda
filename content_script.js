@@ -845,6 +845,7 @@ function getExamTodo(examListAll, parsedExam) {
 }
 
 function getKadaiFromPandA() {
+    // console.log("connecting to panda api");
     return $.ajax({
         url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
         dataType: "json",
@@ -1037,43 +1038,32 @@ function updateFlags() {
     }
 }
 
-function display() {
+function loadAndDisplay() {
+    // 0. Cache check
+    getFromStorage('lastKadaiGetTime').then(function (lastKadaiGetTime) {
+        // console.log("lastget:",lastKadaiGetTime);
+        // console.log("time:",(nowTime - lastKadaiGetTime)/1000);
+        if ((nowTime - lastKadaiGetTime)/1000 < 120)  {
+            console.log("cached");
+            getFromStorage('kadai').then(function (storedKadai) {
+                display(storedKadai, 0);
+                miniPandAReady();
+            });
+        }else{
+            // console.log("fetched");
+            // 1. Get latest kadai
+            getKadaiFromPandA().done(function (result) {
+                let collectionCount = result.assignment_collection.length;
+                let parsedKadai = parseKadai(result);
 
-    // 1. Get latest kadai
-    getKadaiFromPandA().done(function (result) {
+                display(parsedKadai, collectionCount);
 
-        let parsedKadai = parseKadai(result);
-
-        getKadaiTodo(parsedKadai);
-        // 2. Get old kadai from storage
-        getFromStorage('kadai').then(function (storedKadai) {
-            // 3. If there is no kadai in storege -> initialize
-            if (typeof storedKadai === 'undefined') {
-                saveKadai(parsedKadai);
-            } else {
-                // 3. else compare latest and saved kadai list ->make uptodate list
-                let upToDateKadaiList;
-                upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
-
-                // 4. Get visited history
-                getFromStorage('hasNewItem').then(function (hasNewItem) {
-
-                    if (typeof hasNewItem === 'undefined') {
-                        hasNewItem = [];
-                    }
-                    let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
-
-                    if (result.assignment_collection.length !== 0){
-                        saveHasNew(notificationList);
-                        saveKadai(parsedKadai);
-                    }
-                    addNotificationBadge(tabList, notificationList);
-                });
-            }
-        });
-
-        miniPandAReady();
+                miniPandAReady();
+            });
+        }
     });
+
+
 }
 
 function loadExamfromStorage() {
@@ -1083,6 +1073,36 @@ function loadExamfromStorage() {
                 insertSideNavExam(parsedExam, examToDo, tabList, lastExamGetTime);
             });
         });
+    });
+}
+
+function display(parsedKadai, collectionCount){
+    getKadaiTodo(parsedKadai);
+    // 2. Get old kadai from storage
+    getFromStorage('kadai').then(function (storedKadai) {
+        // 3. If there is no kadai in storege -> initialize
+        if (typeof storedKadai === 'undefined') {
+            saveKadai(parsedKadai);
+        } else {
+            // 3. else compare latest and saved kadai list ->make uptodate list
+            let upToDateKadaiList;
+            upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
+
+            // 4. Get visited history
+            getFromStorage('hasNewItem').then(function (hasNewItem) {
+
+                if (typeof hasNewItem === 'undefined') {
+                    hasNewItem = [];
+                }
+                let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
+
+                if (collectionCount !== 0){
+                    saveHasNew(notificationList);
+                    saveKadai(parsedKadai);
+                }
+                addNotificationBadge(tabList, notificationList);
+            });
+        }
     });
 }
 
@@ -1151,7 +1171,7 @@ function main() {
     createSideNav();
     //display hamburger first
     setTimeout(() => {
-        display();
+        loadAndDisplay();
         updateFlags();
     }, 50);
 }
