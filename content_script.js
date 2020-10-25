@@ -845,7 +845,7 @@ function getExamTodo(examListAll, parsedExam) {
 }
 
 function getKadaiFromPandA() {
-    console.log("connecting to panda api");
+    // console.log("connecting to panda api");
     return $.ajax({
         url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
         dataType: "json",
@@ -1041,8 +1041,8 @@ function updateFlags() {
 function loadAndDisplay() {
     // 0. Cache check
     getFromStorage('lastKadaiGetTime').then(function (lastKadaiGetTime) {
-        console.log("lastget:",lastKadaiGetTime);
-        console.log("time:",(nowTime - lastKadaiGetTime)/1000);
+        // console.log("lastget:",lastKadaiGetTime);
+        // console.log("time:",(nowTime - lastKadaiGetTime)/1000);
         if ((nowTime - lastKadaiGetTime)/1000 < 120)  {
             console.log("cached");
             getFromStorage('kadai').then(function (storedKadai) {
@@ -1050,7 +1050,7 @@ function loadAndDisplay() {
                 miniPandAReady();
             });
         }else{
-            console.log("fetched");
+            // console.log("fetched");
             // 1. Get latest kadai
             getKadaiFromPandA().done(function (result) {
                 let collectionCount = result.assignment_collection.length;
