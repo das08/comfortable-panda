@@ -845,6 +845,7 @@ function getExamTodo(examListAll, parsedExam) {
 }
 
 function getKadaiFromPandA() {
+    console.log("connecting to panda api");
     return $.ajax({
         url: "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json",
         dataType: "json",
@@ -1037,26 +1038,32 @@ function updateFlags() {
     }
 }
 
-function display() {
+function loadAndDisplay() {
     // 0. Cache check
-    // getFromStorage('lastKadaiGetTime').then(function (lastKadaiGetTime) {
-    //     if ((lastKadaiGetTime - nowTime)/1000 < 120)  {
-    //         getFromStorage('kadai').then(function (storedKadai) {
-    //
-    //         });
-    //     }
-    // });
+    getFromStorage('lastKadaiGetTime').then(function (lastKadaiGetTime) {
+        console.log("lastget:",lastKadaiGetTime);
+        console.log("time:",(nowTime - lastKadaiGetTime)/1000);
+        if ((nowTime - lastKadaiGetTime)/1000 < 120)  {
+            console.log("cached");
+            getFromStorage('kadai').then(function (storedKadai) {
+                display(storedKadai, 0);
+                miniPandAReady();
+            });
+        }else{
+            console.log("fetched");
+            // 1. Get latest kadai
+            getKadaiFromPandA().done(function (result) {
+                let collectionCount = result.assignment_collection.length;
+                let parsedKadai = parseKadai(result);
 
-    // 1. Get latest kadai
-    getKadaiFromPandA().done(function (result) {
-        let collectionCount = result.assignment_collection.length;
-        let parsedKadai = parseKadai(result);
-        console.log(result);
+                display(parsedKadai, collectionCount);
 
-        test(parsedKadai, collectionCount);
-
-        miniPandAReady();
+                miniPandAReady();
+            });
+        }
     });
+
+
 }
 
 function loadExamfromStorage() {
@@ -1069,7 +1076,7 @@ function loadExamfromStorage() {
     });
 }
 
-function test(parsedKadai, collectionCount){
+function display(parsedKadai, collectionCount){
     getKadaiTodo(parsedKadai);
     // 2. Get old kadai from storage
     getFromStorage('kadai').then(function (storedKadai) {
@@ -1164,7 +1171,7 @@ function main() {
     createSideNav();
     //display hamburger first
     setTimeout(() => {
-        display();
+        loadAndDisplay();
         updateFlags();
     }, 50);
 }
