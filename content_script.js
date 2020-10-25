@@ -1038,39 +1038,22 @@ function updateFlags() {
 }
 
 function display() {
+    // 0. Cache check
+    // getFromStorage('lastKadaiGetTime').then(function (lastKadaiGetTime) {
+    //     if ((lastKadaiGetTime - nowTime)/1000 < 120)  {
+    //         getFromStorage('kadai').then(function (storedKadai) {
+    //
+    //         });
+    //     }
+    // });
 
     // 1. Get latest kadai
     getKadaiFromPandA().done(function (result) {
-
+        let collectionCount = result.assignment_collection.length;
         let parsedKadai = parseKadai(result);
+        console.log(result);
 
-        getKadaiTodo(parsedKadai);
-        // 2. Get old kadai from storage
-        getFromStorage('kadai').then(function (storedKadai) {
-            // 3. If there is no kadai in storege -> initialize
-            if (typeof storedKadai === 'undefined') {
-                saveKadai(parsedKadai);
-            } else {
-                // 3. else compare latest and saved kadai list ->make uptodate list
-                let upToDateKadaiList;
-                upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
-
-                // 4. Get visited history
-                getFromStorage('hasNewItem').then(function (hasNewItem) {
-
-                    if (typeof hasNewItem === 'undefined') {
-                        hasNewItem = [];
-                    }
-                    let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
-
-                    if (result.assignment_collection.length !== 0){
-                        saveHasNew(notificationList);
-                        saveKadai(parsedKadai);
-                    }
-                    addNotificationBadge(tabList, notificationList);
-                });
-            }
-        });
+        test(parsedKadai, collectionCount);
 
         miniPandAReady();
     });
@@ -1083,6 +1066,36 @@ function loadExamfromStorage() {
                 insertSideNavExam(parsedExam, examToDo, tabList, lastExamGetTime);
             });
         });
+    });
+}
+
+function test(parsedKadai, collectionCount){
+    getKadaiTodo(parsedKadai);
+    // 2. Get old kadai from storage
+    getFromStorage('kadai').then(function (storedKadai) {
+        // 3. If there is no kadai in storege -> initialize
+        if (typeof storedKadai === 'undefined') {
+            saveKadai(parsedKadai);
+        } else {
+            // 3. else compare latest and saved kadai list ->make uptodate list
+            let upToDateKadaiList;
+            upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
+
+            // 4. Get visited history
+            getFromStorage('hasNewItem').then(function (hasNewItem) {
+
+                if (typeof hasNewItem === 'undefined') {
+                    hasNewItem = [];
+                }
+                let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
+
+                if (collectionCount !== 0){
+                    saveHasNew(notificationList);
+                    saveKadai(parsedKadai);
+                }
+                addNotificationBadge(tabList, notificationList);
+            });
+        }
     });
 }
 
