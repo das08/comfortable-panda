@@ -9,6 +9,7 @@ const initLetter = ["a", "b", "c", "d"];
 
 const nowTime = new Date().getTime();
 // const nowTime = 1590937200000;
+const cacheInterval = 120
 
 const tabList = getTabList();
 
@@ -103,6 +104,8 @@ function toggleKadaiTab() {
     examTab.style.display = 'none';
     let addMemoButton = document.querySelector('.plus-button');
     addMemoButton.style.display = '';
+    let lastKadaiGetTime = document.querySelector('.kadai-time');
+    lastKadaiGetTime.style.display = '';
 }
 
 function toggleExamTab() {
@@ -112,6 +115,8 @@ function toggleExamTab() {
     examTab.style.display = '';
     let addMemoButton = document.querySelector('.plus-button');
     addMemoButton.style.display = 'none';
+    let lastKadaiGetTime = document.querySelector('.kadai-time');
+    lastKadaiGetTime.style.display = 'none';
     // console.log("examtab pressed");
     loadExamfromStorage();
 }
@@ -300,7 +305,7 @@ function todoAdd(event) {
     });
 }
 
-function createSideNav() {
+function createSideNav(lastKadaiGetTime) {
     let lectureIDList = tabList;
     // add hamburger
     let topbar = document.getElementById("mastHead");
@@ -331,7 +336,13 @@ function createSideNav() {
     let addMemoButton = createElem("button", {className: "plus-button", innerText: "+"});
     addMemoButton.addEventListener('click', toggleMemoBox, true);
 
-    appendChildAll(main_div, [logo, a, kadaiTab, kadaiTabLabel, examTab, examTabLabel, addMemoButton]);
+    if ((nowTime - lastKadaiGetTime)/1000 >= cacheInterval) lastKadaiGetTime = nowTime
+    if (lastKadaiGetTime === undefined) lastKadaiGetTime = nowTime
+    let dateTime = new Date(lastKadaiGetTime);
+    let lastKadaiLoad = createElem("p", {className: "kadai-time"});
+    lastKadaiLoad.innerText = "取得日時： " + dateTime.toLocaleDateString() + " " + dateTime.getHours() + ":" + ('00' + dateTime.getMinutes()).slice(-2) + ":" + ('00' + dateTime.getSeconds()).slice(-2);
+
+    appendChildAll(main_div, [logo, a, kadaiTab, kadaiTabLabel, examTab, examTabLabel, addMemoButton, lastKadaiLoad]);
 
     // add edit box
     let memoEditBox = createElem("div");
@@ -1038,19 +1049,19 @@ function updateFlags() {
     }
 }
 
-function loadAndDisplay() {
+function loadAndDisplay(lastKadaiGetTime) {
     // 0. Cache check
-    getFromStorage('lastKadaiGetTime').then(function (lastKadaiGetTime) {
-        // console.log("lastget:",lastKadaiGetTime);
-        // console.log("time:",(nowTime - lastKadaiGetTime)/1000);
-        if ((nowTime - lastKadaiGetTime)/1000 < 120)  {
+
+        console.log("lastget:",lastKadaiGetTime);
+        console.log("time:",(nowTime - lastKadaiGetTime)/1000);
+        if ((nowTime - lastKadaiGetTime)/1000 < cacheInterval)  {
             console.log("cached");
             getFromStorage('kadai').then(function (storedKadai) {
                 display(storedKadai, 0);
                 miniPandAReady();
             });
         }else{
-            // console.log("fetched");
+            console.log("fetched");
             // 1. Get latest kadai
             getKadaiFromPandA().done(function (result) {
                 let collectionCount = result.assignment_collection.length;
@@ -1061,7 +1072,6 @@ function loadAndDisplay() {
                 miniPandAReady();
             });
         }
-    });
 
 
 }
@@ -1168,12 +1178,14 @@ function miniPandAReady() {
 
 function main() {
     insertCSS();
-    createSideNav();
-    //display hamburger first
-    setTimeout(() => {
-        loadAndDisplay();
-        updateFlags();
-    }, 50);
+    getFromStorage('lastKadaiGetTime').then(function (lastKadaiGetTime) {
+        createSideNav(lastKadaiGetTime);
+        //display hamburger first
+        setTimeout(() => {
+            loadAndDisplay(lastKadaiGetTime);
+            updateFlags();
+        }, 50);
+    });
 }
 
 main();
