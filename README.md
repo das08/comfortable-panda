@@ -52,6 +52,7 @@ Also check box is available for you to distinguish completed assignments from wo
 - 2020/08/16 v1.4.1 Removed redundant lines.
 - 2020/08/17 v1.5.0 Added relax PandA and spinning wheel.
 - 2020/10/02 v1.5.2 Fixed badge reset bug.
+- 2020/10/25 v1.6.0 Add cache.
 
 # License
 MIT

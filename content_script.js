@@ -1052,8 +1052,8 @@ function updateFlags() {
 function loadAndDisplay(lastKadaiGetTime) {
     // 0. Cache check
 
-        console.log("lastget:",lastKadaiGetTime);
-        console.log("time:",(nowTime - lastKadaiGetTime)/1000);
+        // console.log("lastget:",lastKadaiGetTime);
+        // console.log("time:",(nowTime - lastKadaiGetTime)/1000);
         if ((nowTime - lastKadaiGetTime)/1000 < cacheInterval)  {
             console.log("cached");
             getFromStorage('kadai').then(function (storedKadai) {
@@ -1061,7 +1061,7 @@ function loadAndDisplay(lastKadaiGetTime) {
                 miniPandAReady();
             });
         }else{
-            console.log("fetched");
+            // console.log("fetched");
             // 1. Get latest kadai
             getKadaiFromPandA().done(function (result) {
                 let collectionCount = result.assignment_collection.length;
