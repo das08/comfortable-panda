@@ -484,14 +484,14 @@ function insertSideNav(parsedKadai, kadaiListAll, lectureIDList) {
         appendChildAll(relaxDiv, [relaxPandaP, relaxPandaImg]);
         kadaiTab.appendChild(relaxDiv);
     }
-    getFromStorage('kadaiMemo').then(function (kadaiMemo) {
-        getFromStorage('kadaiMemoTodo').then(function (kadaiMemoTodo) {
+
+    Promise.all([getFromStorage('kadaiMemo'), getFromStorage('kadaiMemoTodo')])
+        .then(([kadaiMemo, kadaiMemoTodo]) => {
             if (kadaiMemo !== undefined) {
                 if (kadaiMemoTodo === undefined) kadaiMemoTodo = [];
                 addMemo(kadaiMemo, kadaiMemoTodo);
             }
         });
-    });
 }
 
 function insertSideNavExam(parsedExam, examListAll, lectureIDList, lastExamGetTime) {
@@ -1061,7 +1061,7 @@ function loadAndDisplay(lastKadaiGetTime) {
                 miniPandAReady();
             });
         }else{
-            // console.log("fetched");
+            console.log("fetched");
             // 1. Get latest kadai
             getKadaiFromPandA().done(function (result) {
                 let collectionCount = result.assignment_collection.length;
@@ -1077,13 +1077,11 @@ function loadAndDisplay(lastKadaiGetTime) {
 }
 
 function loadExamfromStorage() {
-    getFromStorage('parsedExam').then(function (parsedExam) {
-        getFromStorage('examTodo').then(function (examToDo) {
-            getFromStorage('lastExamGetTime').then(function (lastExamGetTime) {
-                insertSideNavExam(parsedExam, examToDo, tabList, lastExamGetTime);
-            });
-        });
+    Promise.all([getFromStorage('parsedExam'), getFromStorage('examTodo'), getFromStorage('lastExamGetTime')])
+        .then((res) => {
+            insertSideNavExam(res[0], res[1], tabList, res[2]);
     });
+
 }
 
 function display(parsedKadai, collectionCount){
