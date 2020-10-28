@@ -1055,13 +1055,13 @@ function loadAndDisplay(lastKadaiGetTime) {
         // console.log("lastget:",lastKadaiGetTime);
         // console.log("time:",(nowTime - lastKadaiGetTime)/1000);
         if ((nowTime - lastKadaiGetTime)/1000 < cacheInterval)  {
-            console.log("cached");
+            console.log("Loaded from cache");
             getFromStorage('kadai').then(function (storedKadai) {
                 display(storedKadai, 0);
                 miniPandAReady();
             });
         }else{
-            console.log("fetched");
+            console.log("Loaded from PandA");
             // 1. Get latest kadai
             getKadaiFromPandA().done(function (result) {
                 let collectionCount = result.assignment_collection.length;
@@ -1085,32 +1085,33 @@ function loadExamfromStorage() {
 
 function display(parsedKadai, collectionCount){
     getKadaiTodo(parsedKadai);
-    // 2. Get old kadai from storage
-    getFromStorage('kadai').then(function (storedKadai) {
-        // 3. If there is no kadai in storege -> initialize
-        if (typeof storedKadai === 'undefined') {
-            saveKadai(parsedKadai);
-        } else {
-            // 3. else compare latest and saved kadai list ->make uptodate list
-            let upToDateKadaiList;
+
+    Promise.all([getFromStorage('kadai'), getFromStorage('hasNewItem')])
+        .then(([storedKadai, hasNewItem])=>{
+            // 3. Create Up-to-date list.
+            let upToDateKadaiList = [];
+            if (typeof storedKadai === 'undefined') {
+                saveKadai(parsedKadai);
+                storedKadai = parsedKadai
+            } else {
+
+            }
+
             upToDateKadaiList = compareKadai(parsedKadai, storedKadai);
 
             // 4. Get visited history
-            getFromStorage('hasNewItem').then(function (hasNewItem) {
+            if (typeof hasNewItem === 'undefined') {
+                hasNewItem = [];
+            }
+            let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
 
-                if (typeof hasNewItem === 'undefined') {
-                    hasNewItem = [];
-                }
-                let notificationList = createNotificationList(upToDateKadaiList, hasNewItem);
+            if (collectionCount !== 0){
+                saveHasNew(notificationList);
+                saveKadai(parsedKadai);
+            }
+            addNotificationBadge(tabList, notificationList);
+        });
 
-                if (collectionCount !== 0){
-                    saveHasNew(notificationList);
-                    saveKadai(parsedKadai);
-                }
-                addNotificationBadge(tabList, notificationList);
-            });
-        }
-    });
 }
 
 function loadExamfromPanda() {
