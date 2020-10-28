@@ -1078,10 +1078,9 @@ function loadAndDisplay(lastKadaiGetTime) {
 
 function loadExamfromStorage() {
     Promise.all([getFromStorage('parsedExam'), getFromStorage('examTodo'), getFromStorage('lastExamGetTime')])
-        .then((res) => {
-            insertSideNavExam(res[0], res[1], tabList, res[2]);
+        .then(([parsedExam, examToDo, lastExamGetTime]) => {
+            insertSideNavExam(parsedExam, examToDo, tabList, lastExamGetTime);
     });
-
 }
 
 function display(parsedKadai, collectionCount){
