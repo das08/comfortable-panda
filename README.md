@@ -1,6 +1,13 @@
 # comfortable-panda
 Chrome extention that makes PandA life comfortable
 
+# New Repository!
+https://github.com/comfortable-panda/ComfortablePandA-Extension
+
+We've migrated this project to the repository above.  
+Any contribution to Comfortable PandA is more than welcome!
+
+
 # Installation
 1. Goto `chrome://extensions/` on your GoogleChrome
 1. Enable **developer mode**.
