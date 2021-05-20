@@ -1,8 +1,8 @@
 # comfortable-panda
 Chrome extention that makes PandA life comfortable
 
-# New Repository!
-https://github.com/comfortable-panda/ComfortablePandA-Extension
+# 開発リポジトリを移行しました！
+https://github.com/comfortable-panda/ComfortablePandATS
 
 We've migrated this project to the repository above.  
 Any contribution to Comfortable PandA is more than welcome!
